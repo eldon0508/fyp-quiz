@@ -17,7 +17,8 @@ import { useLocation } from "react-router-dom";
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, url: "/admin/dashboard" },
   { text: "Quiz", icon: <AnalyticsRoundedIcon />, url: "/admin/quiz" },
-  { text: "Articles", icon: <PeopleRoundedIcon />, url: "/admin/articles" },
+  { text: "Category", icon: <AnalyticsRoundedIcon />, url: "/admin/category" },
+  { text: "Article", icon: <PeopleRoundedIcon />, url: "/admin/article" },
 ];
 
 const secondaryListItems = [
