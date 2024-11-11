@@ -9,13 +9,13 @@ import { Iconify } from "src/components/iconify";
 
 // ----------------------------------------------------------------------
 
-type CategoryTableToolbarProps = {
+type QuizTableToolbarProps = {
   numSelected: number;
   filterName: string;
   onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export function CategoryTableToolbar({ numSelected, filterName, onFilterName }: CategoryTableToolbarProps) {
+export function CategoryTableToolbar({ numSelected, filterName, onFilterName }: QuizTableToolbarProps) {
   return (
     <Toolbar
       sx={{

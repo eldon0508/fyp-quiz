@@ -52,11 +52,13 @@ app.get("/articles", (req, res) => {
   });
 });
 
-const articleRouter = require("./routes/article");
 const categoryRouter = require("./routes/category");
+const articleRouter = require("./routes/article");
+const quizRouter = require("./routes/quiz");
 
-app.use("/admin/article", articleRouter);
 app.use("/admin/category", categoryRouter);
+app.use("/admin/article", articleRouter);
+app.use("/admin/quiz", quizRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

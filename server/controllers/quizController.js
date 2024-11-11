@@ -1,24 +1,10 @@
 const db = require("../database");
 
 const index = (req, res) => {
-  const query = `
-  SELECT a.*, c.name as category_name
-  FROM articles a
-  LEFT JOIN categories c
-  ON a.category_id = c.id
-  WHERE a.deleted_at IS NULL`;
-
+  const query = `SELECT * FROM quizzes WHERE deleted_at IS NULL`;
   db.query(query, (err, data) => {
     if (err) return res.json(err);
     return res.json({ data: data });
-  });
-};
-
-const create = (req, res) => {
-  const query = `SELECT id, name FROM categories WHERE deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ categories: data });
   });
 };
 
@@ -29,15 +15,13 @@ const store = (req, res) => {
     const d = new Date();
     const dt = d.toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
-      category_id: req.body.category_id,
-      title: req.body.title,
-      subtitle: req.body.subtitle,
-      content: req.body.content,
+      name: req.body.name,
+      description: req.body.description,
       created_at: dt,
       updated_at: dt,
     };
 
-    const query = `INSERT articles SET ?`;
+    const query = `INSERT quizzes SET ?`;
 
     db.query(query, q2);
     db.commit();
@@ -50,10 +34,10 @@ const store = (req, res) => {
 };
 
 const edit = (req, res) => {
-  const query = `SELECT * FROM articles WHERE id = ${req.params.id}; SELECT id, name FROM categories WHERE deleted_at IS NULL`;
+  const query = `SELECT * FROM quizzes WHERE id = ${req.params.id}`;
   db.query(query, (err, data) => {
     if (err) return res.json(err);
-    return res.json({ data: data[0][0], categories: data[1] });
+    return res.json({ data: data[0] });
   });
 };
 
@@ -64,13 +48,11 @@ const update = (req, res) => {
     const d = new Date();
     const dt = d.toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
-      category_id: req.body.category_id,
-      title: req.body.title,
-      subtitle: req.body.subtitle,
-      content: req.body.content,
+      name: req.body.name,
+      description: req.body.description,
       updated_at: dt,
     };
-    const query = `UPDATE articles SET ? WHERE id = "${req.params.id}"`;
+    const query = `UPDATE quizzes SET ? WHERE id = "${req.params.id}"`;
 
     db.query(query, q2);
     db.commit();
@@ -88,7 +70,7 @@ const destroy = (req, res) => {
   try {
     const d = new Date();
     const dt = d.toISOString().replace("T", " ").substring(0, 19);
-    query = `UPDATE articles SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
+    query = `UPDATE quizzes SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
     db.query(query);
     db.commit();
     return res.json({ success: true });
@@ -99,4 +81,4 @@ const destroy = (req, res) => {
   }
 };
 
-module.exports = { index, create, store, edit, update, destroy };
+module.exports = { index, store, edit, update, destroy };

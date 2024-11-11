@@ -1,4 +1,4 @@
-import type { CategoryProps } from "./category-table-row";
+import type { ArticleProps } from './article-table-row';
 
 // ----------------------------------------------------------------------
 
@@ -6,12 +6,12 @@ export const visuallyHidden = {
   border: 0,
   margin: -1,
   padding: 0,
-  width: "1px",
-  height: "1px",
-  overflow: "hidden",
-  position: "absolute",
-  whiteSpace: "nowrap",
-  clip: "rect(0 0 0 0)",
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+  position: 'absolute',
+  whiteSpace: 'nowrap',
+  clip: 'rect(0 0 0 0)',
 } as const;
 
 // ----------------------------------------------------------------------
@@ -35,7 +35,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 // ----------------------------------------------------------------------
 
 export function getComparator<Key extends keyof any>(
-  order: "asc" | "desc",
+  order: 'asc' | 'desc',
   orderBy: Key
 ): (
   a: {
@@ -45,7 +45,7 @@ export function getComparator<Key extends keyof any>(
     [key in Key]: number | string;
   }
 ) => number {
-  return order === "desc"
+  return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -53,7 +53,7 @@ export function getComparator<Key extends keyof any>(
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: CategoryProps[];
+  inputData: ArticleProps[];
   filterName: string;
   comparator: (a: any, b: any) => number;
 };
@@ -70,7 +70,9 @@ export function applyFilter({ inputData, comparator, filterName }: ApplyFilterPr
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter((user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1);
+    inputData = inputData.filter(
+      (user) => user.title.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    );
   }
 
   return inputData;

@@ -13,21 +13,21 @@ import { Iconify } from "src/components/iconify";
 
 // ----------------------------------------------------------------------
 
-export type CategoryProps = {
+export type QuizProps = {
   id: string;
   name: string;
   description: string;
   created_at: string;
 };
 
-type CategoryTableRowProps = {
-  row: CategoryProps;
+type QuizTableRowProps = {
+  row: QuizProps;
   selected: boolean;
   onSelectRow: () => void;
   reloadDatas: () => void;
 };
 
-export function CategoryTableRow({ row, selected, onSelectRow, reloadDatas }: CategoryTableRowProps) {
+export function CategoryTableRow({ row, selected, onSelectRow, reloadDatas }: QuizTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {

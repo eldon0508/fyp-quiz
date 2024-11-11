@@ -11,29 +11,34 @@ import TableBody from "@mui/material/TableBody";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import { Grid, Stack, TextField, CardActions, CardContent, FormControl } from "@mui/material";
+import { Grid, MenuItem, TextField, CardActions, CardContent, FormControl } from "@mui/material";
 
 import { Iconify } from "../../../components/iconify";
-import { CategoryTableRow } from "../category-table-row";
+import { ArticleTableRow } from "../article-table-row";
+import { ArticleTableHead } from "../article-table-head";
 import { Scrollbar } from "../../../components/scrollbar";
-import { CategoryTableHead } from "../category-table-head";
 import { TableNoData } from "../../../utils/table-no-data";
 import { DashboardContent } from "../../../layouts/dashboard";
 import { TableEmptyRows } from "../../../utils/table-empty-rows";
-import { emptyRows, applyFilter, getComparator } from "../../../utils/utils";
+import { emptyRows, applyFilter, getComparator } from "../utils";
 
-import type { CategoryProps } from "../category-table-row";
+import type { ArticleProps } from "../article-table-row";
 
 // ----------------------------------------------------------------------
 
-export function CategoryView() {
+type Category = {
+  id: number;
+  name: string;
+};
+
+export function ArticleView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
-  const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [articles, setArticles] = useState<ArticleProps[]>([]);
 
-  const dataFiltered: CategoryProps[] = applyFilter({
-    inputData: categories,
+  const dataFiltered: ArticleProps[] = applyFilter({
+    inputData: articles,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -46,8 +51,8 @@ export function CategoryView() {
 
   const loadAllDatas = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/admin/category");
-      setCategories(res.data.data);
+      const res = await axios.get("http://localhost:3001/admin/article");
+      setArticles(res.data.data);
     } catch (err) {
       console.error(err);
     }
@@ -57,11 +62,11 @@ export function CategoryView() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Categories
+          Articles
         </Typography>
-        <Link to="/admin/category/create">
+        <Link to="/admin/article/create">
           <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
-            New category
+            New article
           </Button>
         </Link>
       </Box>
@@ -69,21 +74,22 @@ export function CategoryView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: "unset" }}>
             <Table sx={{ minWidth: 800 }}>
-              <CategoryTableHead
+              <ArticleTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={categories.length}
+                rowCount={articles.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    categories.map((data) => data.id)
+                    articles.map((data) => data.id)
                   )
                 }
                 headLabel={[
-                  { id: "name", label: "Name" },
-                  { id: "description", label: "Description" },
+                  { id: "title", label: "Title" },
+                  { id: "subtitle", label: "Subtitle" },
+                  { id: "category_id", label: "Category" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
@@ -92,7 +98,7 @@ export function CategoryView() {
                 {dataFiltered
                   .slice(table.page * table.rowsPerPage, table.page * table.rowsPerPage + table.rowsPerPage)
                   .map((row) => (
-                    <CategoryTableRow
+                    <ArticleTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
@@ -100,8 +106,7 @@ export function CategoryView() {
                       reloadDatas={loadAllDatas}
                     />
                   ))}
-
-                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, categories.length)} />
+                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, articles.length)} />
                 {notFound && <TableNoData searchQuery={filterName} />}
               </TableBody>
             </Table>
@@ -110,7 +115,7 @@ export function CategoryView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={categories.length}
+          count={articles.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[10, 25, 50, 100]}
@@ -189,36 +194,52 @@ export function useTable() {
   };
 }
 
-export function CategoryCreate() {
+export function ArticleCreate() {
   const navigate = useNavigate();
-  const [category, setCategory] = useState({
-    name: "",
-    description: "",
+  const [article, setArticle] = useState({
+    title: "",
+    subtitle: "",
+    category_id: -1,
+    content: "",
   });
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setCategory({ ...category, [e.target.name]: e.target.value });
+    setArticle({ ...article, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/category/store`, category);
-      navigate("/admin/category");
+      await axios.post(`http://localhost:3001/admin/article/store`, article);
+      navigate("/admin/article");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/category");
+    navigate("/admin/article");
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3001/admin/article/create`);
+      setCategories(res.data.categories);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Category - Create
+          Article - Create
         </Typography>
       </Box>
       <Card>
@@ -227,17 +248,58 @@ export function CategoryCreate() {
             <Grid container spacing={2} padding={3}>
               <Grid item xs={6}>
                 <FormControl fullWidth>
-                  <TextField fullWidth id="name" name="name" label="Name" required onChange={(e) => onInputChange(e)} />
+                  <TextField
+                    fullWidth
+                    id="title"
+                    name="title"
+                    label="Title"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                  />
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
                   <TextField
-                    id="description"
-                    name="description"
-                    label="Description"
+                    id="subtitle"
+                    name="subtitle"
+                    label="Subtitle"
                     required
                     onChange={(e) => onInputChange(e)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="category_id"
+                    name="category_id"
+                    label="Category"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    select
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Category ---
+                    </MenuItem>
+                    {categories.map((category: Category) => (
+                      <MenuItem value={category.id} key={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="content"
+                    name="content"
+                    label="Content"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    multiline
                   />
                 </FormControl>
               </Grid>
@@ -263,15 +325,18 @@ export function CategoryCreate() {
   );
 }
 
-export function CategoryEdit() {
+export function ArticleEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [category, setCategory] = useState({
-    name: "",
-    description: "",
+  const [article, setArticle] = useState({
+    title: "",
+    subtitle: "",
+    category_id: -1,
+    content: "",
   });
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const { name, description } = category;
+  const { title, subtitle, category_id, content } = article;
 
   useEffect(() => {
     loadData();
@@ -279,66 +344,105 @@ export function CategoryEdit() {
 
   const loadData = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/admin/category/${id}/edit`);
-      setCategory(res.data.data);
+      const res = await axios.get(`http://localhost:3001/admin/article/${id}/edit`);
+      setArticle(res.data.data);
+      setCategories(res.data.categories);
     } catch (err) {
       console.error(err);
     }
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setCategory({ ...category, [e.target.name]: e.target.value });
+    setArticle({ ...article, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/category/${id}/update`, category);
-      navigate("/admin/category");
+      await axios.put(`http://localhost:3001/admin/article/${id}/update`, article);
+      navigate("/admin/article");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/category");
+    navigate("/admin/article");
   };
 
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Category - Edit
+          Article - Edit
         </Typography>
       </Box>
       <Card>
         <form onSubmit={(e) => handleSubmit(e)}>
           <CardContent>
-            <Box sx={{ p: 4 }}>
-              <Stack direction="row" spacing={2}>
+            <Grid container spacing={2} padding={3}>
+              <Grid item xs={6}>
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="name"
-                    name="name"
-                    label="Name"
+                    id="title"
+                    name="title"
+                    label="Title"
                     required
-                    value={name}
                     onChange={(e) => onInputChange(e)}
+                    value={title}
                   />
                 </FormControl>
+              </Grid>
+              <Grid item xs={6}>
                 <FormControl fullWidth>
                   <TextField
-                    id="description"
-                    name="description"
-                    label="Description"
+                    id="subtitle"
+                    name="subtitle"
+                    label="Subtitle"
                     required
-                    value={description}
                     onChange={(e) => onInputChange(e)}
+                    value={subtitle}
                   />
                 </FormControl>
-              </Stack>
-            </Box>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="category_id"
+                    name="category_id"
+                    label="Category"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    select
+                    value={category_id}
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Category ---
+                    </MenuItem>
+                    {categories.map((category: Category) => (
+                      <MenuItem value={category.id} key={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="content"
+                    name="content"
+                    label="Content"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    multiline
+                    value={content}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
           </CardContent>
           <CardActions>
             <Grid container spacing={2} padding={3} direction="row" justifyContent="flex-end" alignItems="center">

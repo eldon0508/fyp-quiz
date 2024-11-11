@@ -1,7 +1,6 @@
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 
-import { CONFIG } from 'src/config-global';
-import { CategoryCreate } from 'src/sections/category/view';
+import { CategoryCreate } from "../../sections/category/view";
 
 // ----------------------------------------------------------------------
 
@@ -9,7 +8,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> {`Categories - ${CONFIG.appName}`}</title>
+        <title> Category - Create</title>
       </Helmet>
 
       <CategoryCreate />

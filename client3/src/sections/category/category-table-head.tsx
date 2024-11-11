@@ -5,11 +5,11 @@ import TableHead from '@mui/material/TableHead';
 import TableCell from '@mui/material/TableCell';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
-import { visuallyHidden } from './utils';
+import { visuallyHidden } from '../../utils/utils';
 
 // ----------------------------------------------------------------------
 
-type UserTableHeadProps = {
+type CategoryTableHeadProps = {
   orderBy: string;
   rowCount: number;
   numSelected: number;
@@ -19,7 +19,7 @@ type UserTableHeadProps = {
   onSelectAllRows: (checked: boolean) => void;
 };
 
-export function UserTableHead({
+export function CategoryTableHead({
   order,
   onSort,
   orderBy,
@@ -27,7 +27,7 @@ export function UserTableHead({
   headLabel,
   numSelected,
   onSelectAllRows,
-}: UserTableHeadProps) {
+}: CategoryTableHeadProps) {
   return (
     <TableHead>
       <TableRow>

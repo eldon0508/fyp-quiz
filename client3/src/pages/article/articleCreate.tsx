@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-import { CategoryEdit } from "../../sections/category/view";
+import { ArticleCreate } from "../../sections/article/view";
 
 // ----------------------------------------------------------------------
 
@@ -8,10 +8,10 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> Category - Edit</title>
+        <title> Article - Create</title>
       </Helmet>
 
-      <CategoryEdit />
+      <ArticleCreate />
     </>
   );
 }

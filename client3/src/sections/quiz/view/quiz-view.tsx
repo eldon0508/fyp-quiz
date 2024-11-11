@@ -14,26 +14,26 @@ import TablePagination from "@mui/material/TablePagination";
 import { Grid, Stack, TextField, CardActions, CardContent, FormControl } from "@mui/material";
 
 import { Iconify } from "../../../components/iconify";
-import { CategoryTableRow } from "../category-table-row";
+import { CategoryTableRow } from "../quiz-table-row";
 import { Scrollbar } from "../../../components/scrollbar";
-import { CategoryTableHead } from "../category-table-head";
+import { CategoryTableHead } from "../quiz-table-head";
 import { TableNoData } from "../../../utils/table-no-data";
 import { DashboardContent } from "../../../layouts/dashboard";
 import { TableEmptyRows } from "../../../utils/table-empty-rows";
 import { emptyRows, applyFilter, getComparator } from "../../../utils/utils";
 
-import type { CategoryProps } from "../category-table-row";
+import type { QuizProps } from "../quiz-table-row";
 
 // ----------------------------------------------------------------------
 
-export function CategoryView() {
+export function QuizView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
-  const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizProps[]>([]);
 
-  const dataFiltered: CategoryProps[] = applyFilter({
-    inputData: categories,
+  const dataFiltered: QuizProps[] = applyFilter({
+    inputData: quizzes,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -46,8 +46,8 @@ export function CategoryView() {
 
   const loadAllDatas = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/admin/category");
-      setCategories(res.data.data);
+      const res = await axios.get("http://localhost:3001/admin/quiz");
+      setQuizzes(res.data.data);
     } catch (err) {
       console.error(err);
     }
@@ -57,11 +57,11 @@ export function CategoryView() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Categories
+          Quizzes
         </Typography>
-        <Link to="/admin/category/create">
+        <Link to="/admin/quiz/create">
           <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
-            New category
+            New quiz
           </Button>
         </Link>
       </Box>
@@ -72,13 +72,13 @@ export function CategoryView() {
               <CategoryTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={categories.length}
+                rowCount={quizzes.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    categories.map((data) => data.id)
+                    quizzes.map((data) => data.id)
                   )
                 }
                 headLabel={[
@@ -101,7 +101,7 @@ export function CategoryView() {
                     />
                   ))}
 
-                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, categories.length)} />
+                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, quizzes.length)} />
                 {notFound && <TableNoData searchQuery={filterName} />}
               </TableBody>
             </Table>
@@ -110,7 +110,7 @@ export function CategoryView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={categories.length}
+          count={quizzes.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[10, 25, 50, 100]}
@@ -189,36 +189,36 @@ export function useTable() {
   };
 }
 
-export function CategoryCreate() {
+export function QuizCreate() {
   const navigate = useNavigate();
-  const [category, setCategory] = useState({
+  const [quiz, setQuiz] = useState({
     name: "",
     description: "",
   });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setCategory({ ...category, [e.target.name]: e.target.value });
+    setQuiz({ ...quiz, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/category/store`, category);
-      navigate("/admin/category");
+      await axios.post(`http://localhost:3001/admin/quiz/store`, quiz);
+      navigate("/admin/quiz");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/category");
+    navigate("/admin/quiz");
   };
 
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Category - Create
+          Quiz - Create
         </Typography>
       </Box>
       <Card>
@@ -263,15 +263,15 @@ export function CategoryCreate() {
   );
 }
 
-export function CategoryEdit() {
+export function QuizEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [category, setCategory] = useState({
+  const [quiz, setQuiz] = useState({
     name: "",
     description: "",
   });
 
-  const { name, description } = category;
+  const { name, description } = quiz;
 
   useEffect(() => {
     loadData();
@@ -279,36 +279,36 @@ export function CategoryEdit() {
 
   const loadData = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/admin/category/${id}/edit`);
-      setCategory(res.data.data);
+      const res = await axios.get(`http://localhost:3001/admin/quiz/${id}/edit`);
+      setQuiz(res.data.data);
     } catch (err) {
       console.error(err);
     }
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setCategory({ ...category, [e.target.name]: e.target.value });
+    setQuiz({ ...quiz, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/category/${id}/update`, category);
-      navigate("/admin/category");
+      await axios.put(`http://localhost:3001/admin/quiz/${id}/update`, quiz);
+      navigate("/admin/quiz");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/category");
+    navigate("/admin/quiz");
   };
 
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Category - Edit
+          Quiz - Edit
         </Typography>
       </Box>
       <Card>

@@ -1,4 +1,4 @@
-import type { CategoryProps } from "./category-table-row";
+import type { QuizProps } from "./quiz-table-row";
 
 // ----------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ export function getComparator<Key extends keyof any>(
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: CategoryProps[];
+  inputData: QuizProps[];
   filterName: string;
   comparator: (a: any, b: any) => number;
 };
