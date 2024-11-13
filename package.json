@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:server": "node server/index.js",
-    "start:client": "cd client2 && npm run start",
-    "start:client-admin": "cd client3 && npm run dev"
+    "start:client": "cd client && npm run start",
+    "start:client-admin": "cd client-admin && npm run dev"
   },
   "keywords": [],
   "author": "Eldon Yeap",
