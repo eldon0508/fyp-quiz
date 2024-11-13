@@ -16,6 +16,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { styled } from "@mui/material/styles";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import RssFeedRoundedIcon from "@mui/icons-material/RssFeedRounded";
+import axios from "axios";
 
 const cardData = [
   {
@@ -181,6 +182,20 @@ export function Search() {
 
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
+  const [articles, setArticles] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
+
+  React.useEffect(() => {
+    loadAllArticles();
+  }, []);
+
+  const loadAllArticles = async () => {
+    const res = await axios.get("/articles");
+    if (res.data.success) {
+      setArticles(res.data.data);
+      setCategories(res.data.categories);
+    }
+  };
 
   const handleFocus = (index) => {
     setFocusedCardIndex(index);
@@ -198,7 +213,7 @@ export default function MainContent() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <div>
         <Typography variant="h1" gutterBottom>
-          Blog
+          Articles
         </Typography>
         <Typography>
           Stay in the loop with the latest about our products
@@ -238,42 +253,9 @@ export default function MainContent() {
           }}
         >
           <Chip onClick={handleClick} size="medium" label="All categories" />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Company"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
-          />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Product"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
-          />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Design"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
-          />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Engineering"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
-          />
+          {categories.map((category) => (
+            <Chip onClick={handleClick} size="medium" label={category.name} />
+          ))}
         </Box>
         <Box
           sx={{
@@ -383,7 +365,7 @@ export default function MainContent() {
             />
             <SyledCardContent>
               <Typography gutterBottom variant="caption" component="div">
-                {cardData[2].tag}
+                {cardData[2].tag}aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
               </Typography>
               <Typography gutterBottom variant="h6" component="div">
                 {cardData[2].title}

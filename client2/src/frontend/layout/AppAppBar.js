@@ -1,4 +1,6 @@
 import * as React from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 import { alpha, styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
@@ -11,8 +13,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import Sitemark from "./SitemarkIcon";
-import ColorModeIconDropdown from "../../shared-theme/ColorModeIconDropdown";
+import { SitemarkIcon } from "./CustomIcon";
+import ColorModeIconDropdown from "../shared-theme/ColorModeIconDropdown";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -32,6 +34,18 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
+  const [authUser, setAuthUser] = React.useState(null);
+
+  React.useEffect(() => {
+    getAuthUser();
+  }, []);
+
+  const getAuthUser = async () => {
+    const res = await axios.get("/getAuthUser");
+    if (res.data.data) {
+      setAuthUser(res.data.data);
+    }
+  };
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -53,19 +67,10 @@ export default function AppAppBar() {
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
-            <Sitemark />
+            <SitemarkIcon />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <Button variant="text" color="info" size="small">
-                Features
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Testimonials
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Highlights
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Pricing
+                Quiz
               </Button>
               <Button
                 variant="text"
@@ -73,15 +78,7 @@ export default function AppAppBar() {
                 size="small"
                 sx={{ minWidth: 0 }}
               >
-                FAQ
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Blog
+                Articles
               </Button>
             </Box>
           </Box>
@@ -92,16 +89,38 @@ export default function AppAppBar() {
               alignItems: "center",
             }}
           >
-            <a href="/login">
-              <Button color="primary" variant="text" size="small">
-                Sign in
-              </Button>
-            </a>
-            <a href="/signup">
-              <Button color="primary" variant="contained" size="small">
-                Sign up
-              </Button>
-            </a>
+            {authUser ? (
+              <>
+                <Link to="/profile">
+                  <Button color="secondary" variant="outlined" size="small">
+                    Profile
+                  </Button>
+                </Link>
+                <form method="post" action="/signout">
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                    type="submit"
+                  >
+                    Sign out
+                  </Button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link to="/signin">
+                  <Button color="secondary" variant="outlined" size="small">
+                    Sign in
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button color="primary" variant="outlined" size="small">
+                    Sign up
+                  </Button>
+                </Link>
+              </>
+            )}
             <ColorModeIconDropdown />
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" }, gap: 1 }}>
@@ -130,27 +149,55 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                <MenuItem>Features</MenuItem>
-                <MenuItem>Testimonials</MenuItem>
-                <MenuItem>Highlights</MenuItem>
-                <MenuItem>Pricing</MenuItem>
-                <MenuItem>FAQ</MenuItem>
-                <MenuItem>Blog</MenuItem>
+                <MenuItem>Quiz</MenuItem>
+                <MenuItem>Articles</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <a href="/sigin">
-                    <Button color="primary" variant="contained" fullWidth>
-                      Sign up
-                    </Button>
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a href="/signup">
-                    <Button color="primary" variant="outlined" fullWidth>
-                      Sign in
-                    </Button>
-                  </a>
-                </MenuItem>
+                {authUser ? (
+                  <>
+                    <Link to="/profile">
+                      <MenuItem>
+                        <Button
+                          color="secondary"
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                        >
+                          Profile
+                        </Button>
+                      </MenuItem>
+                    </Link>
+                    <form method="post" action="/signout">
+                      <MenuItem>
+                        <Button
+                          color="primary"
+                          variant="outlined"
+                          size="small"
+                          type="submit"
+                          fullWidth
+                        >
+                          Sign out
+                        </Button>
+                      </MenuItem>
+                    </form>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/signip">
+                      <MenuItem>
+                        <Button color="secondary" variant="outlined" fullWidth>
+                          Sign in
+                        </Button>
+                      </MenuItem>
+                    </Link>
+                    <Link to="/signin">
+                      <MenuItem>
+                        <Button color="primary" variant="outlined" fullWidth>
+                          Sign up
+                        </Button>
+                      </MenuItem>
+                    </Link>
+                  </>
+                )}
               </Box>
             </Drawer>
           </Box>
