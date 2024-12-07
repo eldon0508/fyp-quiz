@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> Quiz - Create</title>
+        <title> Admin | Quiz - Create</title>
       </Helmet>
 
       <QuizCreate />

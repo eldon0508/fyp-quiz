@@ -205,8 +205,15 @@ export default function MainContent() {
     setFocusedCardIndex(null);
   };
 
-  const handleClick = () => {
-    console.info("You clicked the filter chip.");
+  const handleClick = async (id) => {
+    if (id === undefined) {
+      loadAllArticles();
+    } else {
+      const res = await axios.get(`/articles?category=${id}`);
+      if (res.data.success) {
+        setArticles(res.data.data);
+      }
+    }
   };
 
   return (
@@ -252,9 +259,18 @@ export default function MainContent() {
             overflow: "auto",
           }}
         >
-          <Chip onClick={handleClick} size="medium" label="All categories" />
+          <Chip
+            onClick={() => handleClick(undefined)}
+            size="medium"
+            label="All categories"
+          />
           {categories.map((category) => (
-            <Chip onClick={handleClick} size="medium" label={category.name} />
+            <Chip
+              onClick={() => handleClick(category.id)}
+              size="medium"
+              label={category.name}
+              key={category.name}
+            />
           ))}
         </Box>
         <Box
@@ -273,6 +289,46 @@ export default function MainContent() {
         </Box>
       </Box>
       <Grid container spacing={2} columns={12}>
+        {articles.map((article) => (
+          <Grid size={{ xs: 12, md: 6 }}>
+            <SyledCard
+              variant="outlined"
+              onFocus={() => handleFocus(0)}
+              onBlur={handleBlur}
+              tabIndex={0}
+              className={focusedCardIndex === 0 ? "Mui-focused" : ""}
+            >
+              {/* <CardMedia
+                component="img"
+                alt={article.title}
+                image={article.img}
+                sx={{
+                  aspectRatio: "16 / 9",
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
+                }}
+              /> */}
+              <SyledCardContent>
+                <Typography gutterBottom variant="caption" component="div">
+                  {article.category_name}
+                </Typography>
+                <Typography gutterBottom variant="h6" component="div">
+                  {article.title}
+                </Typography>
+                <StyledTypography
+                  variant="body2"
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  {article.summary}
+                </StyledTypography>
+              </SyledCardContent>
+              {article.authors}
+              {/* <Author authors={cardData.authors} /> */}
+            </SyledCard>
+          </Grid>
+        ))}
+
         <Grid size={{ xs: 12, md: 6 }}>
           <SyledCard
             variant="outlined"
@@ -365,7 +421,7 @@ export default function MainContent() {
             />
             <SyledCardContent>
               <Typography gutterBottom variant="caption" component="div">
-                {cardData[2].tag}aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                {cardData[2].tag}
               </Typography>
               <Typography gutterBottom variant="h6" component="div">
                 {cardData[2].title}

@@ -13,14 +13,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import { Grid, Stack, TextField, CardActions, CardContent, FormControl } from "@mui/material";
 
-import { Iconify } from "../../../components/iconify";
-import { CategoryTableRow } from "../quiz-table-row";
-import { Scrollbar } from "../../../components/scrollbar";
-import { CategoryTableHead } from "../quiz-table-head";
-import { TableNoData } from "../../../utils/table-no-data";
-import { DashboardContent } from "../../../layouts/dashboard";
-import { TableEmptyRows } from "../../../utils/table-empty-rows";
-import { emptyRows, applyFilter, getComparator } from "../../../utils/utils";
+import { Iconify } from "src/components/iconify";
+import { Scrollbar } from "src/components/scrollbar";
+import { DashboardContent } from "src/layouts/dashboard";
+import { TableEmptyRows } from "src/utils/table-empty-rows";
+import { TableNoData } from "src/utils/table-no-data";
+import { QuizTableHead } from "../quiz-table-head";
+import { QuizTableRow } from "../quiz-table-row";
+import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { QuizProps } from "../quiz-table-row";
 
@@ -69,7 +69,7 @@ export function QuizView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: "unset" }}>
             <Table sx={{ minWidth: 800 }}>
-              <CategoryTableHead
+              <QuizTableHead
                 order={table.order}
                 orderBy={table.orderBy}
                 rowCount={quizzes.length}
@@ -92,7 +92,7 @@ export function QuizView() {
                 {dataFiltered
                   .slice(table.page * table.rowsPerPage, table.page * table.rowsPerPage + table.rowsPerPage)
                   .map((row) => (
-                    <CategoryTableRow
+                    <QuizTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}

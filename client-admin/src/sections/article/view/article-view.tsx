@@ -13,13 +13,13 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import { Grid, MenuItem, TextField, CardActions, CardContent, FormControl } from "@mui/material";
 
-import { Iconify } from "../../../components/iconify";
+import { Iconify } from "src/components/iconify";
+import { Scrollbar } from "src/components/scrollbar";
+import { DashboardContent } from "src/layouts/dashboard";
+import { TableEmptyRows } from "src/utils/table-empty-rows";
+import { TableNoData } from "src/utils/table-no-data";
 import { ArticleTableRow } from "../article-table-row";
 import { ArticleTableHead } from "../article-table-head";
-import { Scrollbar } from "../../../components/scrollbar";
-import { TableNoData } from "../../../utils/table-no-data";
-import { DashboardContent } from "../../../layouts/dashboard";
-import { TableEmptyRows } from "../../../utils/table-empty-rows";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { ArticleProps } from "../article-table-row";
@@ -197,9 +197,11 @@ export function useTable() {
 export function ArticleCreate() {
   const navigate = useNavigate();
   const [article, setArticle] = useState({
+    category_id: -1,
     title: "",
     subtitle: "",
-    category_id: -1,
+    authors: "",
+    url: "",
     content: "",
   });
   const [categories, setCategories] = useState<Category[]>([]);
@@ -292,6 +294,23 @@ export function ArticleCreate() {
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="authors"
+                    name="authors"
+                    label="authors"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField fullWidth id="url" name="url" label="URL" required onChange={(e) => onInputChange(e)} />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
                 <FormControl fullWidth>
                   <TextField
                     id="content"
@@ -329,14 +348,16 @@ export function ArticleEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [article, setArticle] = useState({
+    category_id: -1,
     title: "",
     subtitle: "",
-    category_id: -1,
+    authors: "",
+    url: "",
     content: "",
   });
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const { title, subtitle, category_id, content } = article;
+  const { category_id, title, subtitle, authors, url, content } = article;
 
   useEffect(() => {
     loadData();
@@ -427,6 +448,32 @@ export function ArticleEdit() {
                       </MenuItem>
                     ))}
                   </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="authors"
+                    name="authors"
+                    label="authors"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    value={authors}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="url"
+                    name="url"
+                    label="URL"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    value={url}
+                  />
                 </FormControl>
               </Grid>
               <Grid item xs={6}>

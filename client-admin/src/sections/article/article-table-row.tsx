@@ -15,9 +15,11 @@ import { Iconify } from "src/components/iconify";
 
 export type ArticleProps = {
   id: string;
+  category_id: number;
   title: string;
   subtitle: string;
-  category_id: number;
+  authors: string;
+  url: string | null;
   content: string;
   created_at: string;
   category_name: string;

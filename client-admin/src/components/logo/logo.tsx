@@ -1,13 +1,13 @@
-import type { BoxProps } from '@mui/material/Box';
+import type { BoxProps } from "@mui/material/Box";
 
-import { useId, forwardRef } from 'react';
+import { useId, forwardRef } from "react";
 
-import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 
-import { RouterLink } from 'src/routes/components';
+import { RouterLink } from "src/routes/components";
 
-import { logoClasses } from './classes';
+import { logoClasses } from "./classes";
 
 // ----------------------------------------------------------------------
 
@@ -18,10 +18,7 @@ export type LogoProps = BoxProps & {
 };
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  (
-    { width, href = '/', height, isSingle = true, disableLink = false, className, sx, ...other },
-    ref
-  ) => {
+  ({ width, href = "/", height, isSingle = true, disableLink = false, className, sx, ...other }, ref) => {
     const theme = useTheme();
 
     const gradientId = useId();
@@ -57,13 +54,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     */
 
     const singleLogo = (
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 512 512"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg width="100%" height="100%" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           fill={`url(#${`${gradientId}-1`})`}
           d="M86.352 246.358C137.511 214.183 161.836 245.017 183.168 285.573C165.515 317.716 153.837 337.331 148.132 344.418C137.373 357.788 125.636 367.911 111.202 373.752C80.856 388.014 43.132 388.681 14 371.048L86.352 246.358Z"
@@ -92,25 +83,11 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
             <stop stopColor={PRIMARY_DARKER} />
             <stop offset="1" stopColor={PRIMARY_MAIN} />
           </linearGradient>
-          <linearGradient
-            id={`${gradientId}-2`}
-            x1="86"
-            y1="128"
-            x2="86"
-            y2="384"
-            gradientUnits="userSpaceOnUse"
-          >
+          <linearGradient id={`${gradientId}-2`} x1="86" y1="128" x2="86" y2="384" gradientUnits="userSpaceOnUse">
             <stop stopColor={PRIMARY_LIGHT} />
             <stop offset="1" stopColor={PRIMARY_MAIN} />
           </linearGradient>
-          <linearGradient
-            id={`${gradientId}-3`}
-            x1="402"
-            y1="288"
-            x2="402"
-            y2="384"
-            gradientUnits="userSpaceOnUse"
-          >
+          <linearGradient id={`${gradientId}-3`} x1="402" y1="288" x2="402" y2="384" gradientUnits="userSpaceOnUse">
             <stop stopColor={PRIMARY_LIGHT} />
             <stop offset="1" stopColor={PRIMARY_MAIN} />
           </linearGradient>
@@ -119,13 +96,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     );
 
     const fullLogo = (
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 360 128"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg width="100%" height="100%" viewBox="0 0 360 128" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           fill={`url(#${`${gradientId}-1`})`}
           d="M21.588 61.59C34.378 53.546 40.458 61.254 45.792 71.393C41.379 79.429 38.459 84.333 37.032 86.105C34.343 89.447 31.409 91.978 27.8 93.438C20.214 97.004 10.783 97.17 3.5 92.762L21.588 61.59Z"
@@ -160,25 +131,11 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
             <stop stopColor={PRIMARY_DARKER} />
             <stop offset="1" stopColor={PRIMARY_MAIN} />
           </linearGradient>
-          <linearGradient
-            id={`${gradientId}-2`}
-            x1="21.5"
-            y1="32"
-            x2="21.5"
-            y2="96"
-            gradientUnits="userSpaceOnUse"
-          >
+          <linearGradient id={`${gradientId}-2`} x1="21.5" y1="32" x2="21.5" y2="96" gradientUnits="userSpaceOnUse">
             <stop stopColor={PRIMARY_LIGHT} />
             <stop offset="1" stopColor={PRIMARY_MAIN} />
           </linearGradient>
-          <linearGradient
-            id={`${gradientId}-3`}
-            x1="100.5"
-            y1="72"
-            x2="100.5"
-            y2="96"
-            gradientUnits="userSpaceOnUse"
-          >
+          <linearGradient id={`${gradientId}-3`} x1="100.5" y1="72" x2="100.5" y2="96" gradientUnits="userSpaceOnUse">
             <stop stopColor={PRIMARY_LIGHT} />
             <stop offset="1" stopColor={PRIMARY_MAIN} />
           </linearGradient>
@@ -200,14 +157,15 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
         ref={ref}
         component={RouterLink}
         href={href}
-        className={logoClasses.root.concat(className ? ` ${className}` : '')}
+        className={logoClasses.root.concat(className ? ` ${className}` : "")}
         aria-label="Logo"
         sx={{
           ...baseSize,
           flexShrink: 0,
-          display: 'inline-flex',
-          verticalAlign: 'middle',
-          ...(disableLink && { pointerEvents: 'none' }),
+          display: "inline-flex",
+          verticalAlign: "middle",
+          marginBottom: "1rem",
+          ...(disableLink && { pointerEvents: "none" }),
           ...sx,
         }}
         {...other}

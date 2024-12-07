@@ -32,6 +32,8 @@ const store = (req, res) => {
       category_id: req.body.category_id,
       title: req.body.title,
       subtitle: req.body.subtitle,
+      author: req.body.author,
+      url: req.body.url,
       content: req.body.content,
       created_at: dt,
       updated_at: dt,
@@ -67,6 +69,8 @@ const update = (req, res) => {
       category_id: req.body.category_id,
       title: req.body.title,
       subtitle: req.body.subtitle,
+      author: req.body.author,
+      url: req.body.url,
       content: req.body.content,
       updated_at: dt,
     };

@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-import { ArticleCreate } from "src/sections/article/view";
+import { UserView } from "src/sections/user/view";
 
 // ----------------------------------------------------------------------
 
@@ -8,10 +8,10 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> Admin | Article - Create</title>
+        <title> Admin | Users</title>
       </Helmet>
 
-      <ArticleCreate />
+      <UserView />
     </>
   );
 }

@@ -1,20 +1,20 @@
-import type { IconButtonProps } from '@mui/material/IconButton';
+import type { IconButtonProps } from "@mui/material/IconButton";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
-import Divider from '@mui/material/Divider';
-import MenuList from '@mui/material/MenuList';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+import Popover from "@mui/material/Popover";
+import Divider from "@mui/material/Divider";
+import MenuList from "@mui/material/MenuList";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 
-import { useRouter, usePathname } from 'src/routes/hooks';
+import { useRouter, usePathname } from "src/routes/hooks";
 
-import { _myAccount } from 'src/_mock';
+import { _myAccount } from "src/_mock";
 
 // ----------------------------------------------------------------------
 
@@ -29,9 +29,7 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
-
   const pathname = usePathname();
-
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -55,7 +53,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       <IconButton
         onClick={handleOpenPopover}
         sx={{
-          p: '2px',
+          p: "2px",
           width: 40,
           height: 40,
           background: (theme) =>
@@ -65,7 +63,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         {...other}
       >
         <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {_myAccount.displayName.charAt(0).toUpperCase()}
+          {_myAccount.displayName.charAt(0).toUpperCase()}ssssss
         </Avatar>
       </IconButton>
 
@@ -73,8 +71,8 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         open={!!openPopover}
         anchorEl={openPopover}
         onClose={handleClosePopover}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
         slotProps={{
           paper: {
             sx: { width: 200 },
@@ -83,33 +81,33 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {_myAccount?.displayName}
+            John
           </Typography>
 
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {_myAccount?.email}
+          <Typography variant="body2" sx={{ color: "text.secondary" }} noWrap>
+            johngmail.com
           </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
         <MenuList
           disablePadding
           sx={{
             p: 1,
             gap: 0.5,
-            display: 'flex',
-            flexDirection: 'column',
+            display: "flex",
+            flexDirection: "column",
             [`& .${menuItemClasses.root}`]: {
               px: 1,
               gap: 2,
               borderRadius: 0.75,
-              color: 'text.secondary',
-              '&:hover': { color: 'text.primary' },
+              color: "text.secondary",
+              "&:hover": { color: "text.primary" },
               [`&.${menuItemClasses.selected}`]: {
-                color: 'text.primary',
-                bgcolor: 'action.selected',
-                fontWeight: 'fontWeightSemiBold',
+                color: "text.primary",
+                bgcolor: "action.selected",
+                fontWeight: "fontWeightSemiBold",
               },
             },
           }}
@@ -126,7 +124,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
           ))}
         </MenuList>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
         <Box sx={{ p: 1 }}>
           <Button fullWidth color="error" size="medium" variant="text">

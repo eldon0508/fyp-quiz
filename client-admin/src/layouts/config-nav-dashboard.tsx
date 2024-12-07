@@ -10,7 +10,7 @@ const icon = (name: string) => (
 export const navData = [
   {
     title: 'Dashboard',
-    path: '/',
+    path: '/admin/dashboard',
     icon: icon('ic-analytics'),
   },
   {
@@ -40,7 +40,7 @@ export const navData = [
   },
   {
     title: 'Sign in',
-    path: '/sign-in',
+    path: '/admin/signin',
     icon: icon('ic-lock'),
   },
   {

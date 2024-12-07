@@ -13,14 +13,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import { Grid, Stack, TextField, CardActions, CardContent, FormControl } from "@mui/material";
 
-import { Iconify } from "../../../components/iconify";
-import { CategoryTableRow } from "../category-table-row";
-import { Scrollbar } from "../../../components/scrollbar";
+import { Iconify } from "src/components/iconify";
+import { Scrollbar } from "src/components/scrollbar";
+import { DashboardContent } from "src/layouts/dashboard";
+import { TableEmptyRows } from "src/utils/table-empty-rows";
+import { TableNoData } from "src/utils/table-no-data";
 import { CategoryTableHead } from "../category-table-head";
-import { TableNoData } from "../../../utils/table-no-data";
-import { DashboardContent } from "../../../layouts/dashboard";
-import { TableEmptyRows } from "../../../utils/table-empty-rows";
-import { emptyRows, applyFilter, getComparator } from "../../../utils/utils";
+import { CategoryTableRow } from "../category-table-row";
+import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { CategoryProps } from "../category-table-row";
 
@@ -191,10 +191,7 @@ export function useTable() {
 
 export function CategoryCreate() {
   const navigate = useNavigate();
-  const [category, setCategory] = useState({
-    name: "",
-    description: "",
-  });
+  const [category, setCategory] = useState({ name: "", description: "" });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setCategory({ ...category, [e.target.name]: e.target.value });
@@ -266,11 +263,7 @@ export function CategoryCreate() {
 export function CategoryEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [category, setCategory] = useState({
-    name: "",
-    description: "",
-  });
-
+  const [category, setCategory] = useState({ name: "", description: "" });
   const { name, description } = category;
 
   useEffect(() => {

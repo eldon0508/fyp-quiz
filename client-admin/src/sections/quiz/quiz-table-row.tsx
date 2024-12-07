@@ -27,7 +27,7 @@ type QuizTableRowProps = {
   reloadDatas: () => void;
 };
 
-export function CategoryTableRow({ row, selected, onSelectRow, reloadDatas }: QuizTableRowProps) {
+export function QuizTableRow({ row, selected, onSelectRow, reloadDatas }: QuizTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,7 +40,7 @@ export function CategoryTableRow({ row, selected, onSelectRow, reloadDatas }: Qu
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/admin/category/${id}/destroy`);
+      await axios.delete(`http://localhost:3001/admin/quiz/${id}/destroy`);
       reloadDatas();
     } catch (err) {
       console.error(err);
@@ -83,7 +83,7 @@ export function CategoryTableRow({ row, selected, onSelectRow, reloadDatas }: Qu
             },
           }}
         >
-          <Link to={`/admin/category/${row.id}/edit`}>
+          <Link to={`/admin/quiz/${row.id}/edit`}>
             <MenuItem sx={{ textDecoration: "none" }}>
               <Iconify icon="solar:pen-bold" />
               Edit

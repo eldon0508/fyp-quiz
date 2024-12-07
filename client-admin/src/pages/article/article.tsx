@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-import { ArticleView } from "../../sections/article/view";
+import { ArticleView } from "src/sections/article/view";
 
 // ----------------------------------------------------------------------
 
@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> Articles</title>
+        <title> Admin | Articles</title>
       </Helmet>
 
       <ArticleView />

@@ -24,7 +24,7 @@ module.exports = function (passport) {
               console.log("failedaaaaa");
               return done(null, false);
             } else {
-              console.log("successaaaa");
+              console.log("successaaaa", data[0]);
               return done(null, data[0]);
             }
           });
