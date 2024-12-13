@@ -69,17 +69,21 @@ export default function AppAppBar() {
           >
             <SitemarkIcon />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Button variant="text" color="info" size="small">
-                Quiz
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Articles
-              </Button>
+              <Link to="/quizzes">
+                <Button variant="text" color="info" size="small">
+                  Quiz
+                </Button>
+              </Link>
+              <Link to="/articles">
+                <Button
+                  variant="text"
+                  color="info"
+                  size="small"
+                  sx={{ minWidth: 0 }}
+                >
+                  Articles
+                </Button>
+              </Link>
             </Box>
           </Box>
           <Box
@@ -149,8 +153,16 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                <MenuItem>Quiz</MenuItem>
-                <MenuItem>Articles</MenuItem>
+                <Link to="/quizzes">
+                  <Button variant="text" color="info" size="small">
+                    Quiz
+                  </Button>
+                </Link>
+                <Link to="/articles">
+                  <Button variant="text" color="info" size="small">
+                    Articles
+                  </Button>
+                </Link>
                 <Divider sx={{ my: 3 }} />
                 {authUser ? (
                   <>

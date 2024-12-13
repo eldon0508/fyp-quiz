@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -15,7 +16,6 @@ import { styled } from "@mui/material/styles";
 
 import ForgotPassword from "./ForgotPassword";
 import { SitemarkIcon } from "./CustomIcons";
-import { useNavigate } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -61,7 +61,7 @@ export default function SignInCard() {
       const data = new FormData(event.currentTarget);
       const res = await axios.post("/signin", data);
       if (res.data.success) {
-        navigate("/articles");
+        navigate("/quizzes");
       }
     } catch (err) {
       console.error(err);

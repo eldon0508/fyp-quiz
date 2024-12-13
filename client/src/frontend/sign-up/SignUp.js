@@ -115,9 +115,10 @@ export default function SignUp(props) {
       const data = new FormData(event.currentTarget);
       const res = await axios.post("/signup", data);
       if (res.data.success) {
-        navigate("/quiz");
+        navigate("/quizzes");
       } else {
-        navigate("/signup");
+        // navigate("/signup");
+        // duplicate username
       }
     } catch (err) {
       console.error(err);
@@ -144,14 +145,13 @@ export default function SignUp(props) {
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             <FormControl>
-              <FormLabel htmlFor="fullname">Full name</FormLabel>
+              <FormLabel htmlFor="firstname">Name</FormLabel>
               <TextField
-                autoComplete="fullname"
-                name="fullname"
+                name="firstname"
                 required
                 fullWidth
-                id="fullname"
-                placeholder="Jon Snow"
+                id="firstname"
+                placeholder="John"
                 error={nameError}
                 helperText={nameErrorMessage}
                 color={nameError ? "error" : "primary"}
