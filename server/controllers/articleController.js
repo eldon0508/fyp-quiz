@@ -29,14 +29,14 @@ const store = (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
       category_id: req.body.category_id,
       title: req.body.title,
       subtitle: req.body.subtitle,
       authors: req.body.authors,
       url: req.body.url,
+      published: req.body.published,
       content: req.body.content,
       created_at: dt,
       updated_at: dt,
@@ -66,14 +66,14 @@ const update = (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
       category_id: req.body.category_id,
       title: req.body.title,
       subtitle: req.body.subtitle,
       authors: req.body.authors,
       url: req.body.url,
+      published: req.body.published,
       content: req.body.content,
       updated_at: dt,
     };
@@ -136,8 +136,7 @@ const destroy = (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     query = `UPDATE articles SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
     db.query(query);
     db.commit();

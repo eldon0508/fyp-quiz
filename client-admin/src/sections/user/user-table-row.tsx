@@ -21,6 +21,7 @@ export type UserProps = {
   id: string;
   firstname: string;
   lastname: string;
+  dob: string;
   created_at: string;
 };
 
@@ -56,10 +57,11 @@ export function UserTableRow({ row, selected, onSelectRow, reloadDatas }: UserTa
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell component="th" scope="row">
           <Box gap={2} display="flex" alignItems="center">
-            {/* <Avatar alt={row.name} src={row.avatarUrl} /> */}
+            <Avatar alt={row.firstname} src="" />
             {row.firstname} {row.lastname}
           </Box>
         </TableCell>
+        <TableCell>{row.dob}</TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>

@@ -296,7 +296,10 @@ export default function MainContent() {
           <>
             {articles.map((article) => (
               <Grid size={{ xs: 12, md: 6 }}>
-                <Link to={`/articles/${article.id}`}>
+                <Link
+                  to={`/articles/${article.id}`}
+                  style={{ textDecoration: "none" }}
+                >
                   <SyledCard
                     variant="outlined"
                     onFocus={() => handleFocus(0)}
@@ -304,16 +307,17 @@ export default function MainContent() {
                     tabIndex={0}
                     className={focusedCardIndex === 0 ? "Mui-focused" : ""}
                   >
-                    {/* <CardMedia
+                    <CardMedia
                       component="img"
                       alt={article.title}
-                      image={article.img}
+                      // image={article.image}
+                      image={`http://localhost:3001/${article.image}`}
                       sx={{
                         aspectRatio: "16 / 9",
                         borderBottom: "1px solid",
                         borderColor: "divider",
                       }}
-                    /> */}
+                    />
                     <SyledCardContent>
                       <Typography
                         gutterBottom

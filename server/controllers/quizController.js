@@ -12,8 +12,7 @@ const store = (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
       name: req.body.name,
       description: req.body.description,
@@ -45,8 +44,7 @@ const update = (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
       name: req.body.name,
       description: req.body.description,
@@ -68,8 +66,7 @@ const destroy = (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     query = `UPDATE quizzes SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
     db.query(query);
     db.commit();

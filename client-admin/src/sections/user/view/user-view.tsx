@@ -83,7 +83,8 @@ export function UserView() {
                   )
                 }
                 headLabel={[
-                  { id: "fullname", label: "Full Name" },
+                  { id: "name", label: "Full Name" },
+                  { id: "dob", label: "Date of Birth" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}

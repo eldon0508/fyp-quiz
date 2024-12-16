@@ -46,15 +46,14 @@ app.post("/signup", async (req, res) => {
         return res.json({ success: false });
       } else {
         const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
-        var d = new Date(),
-          dt = d.toISOString().replace("T", " ").substring(0, 19),
-          q2 = {
-            username: req.body.email,
-            password: hashedPassword,
-            firstname: req.body.firstname,
-            created_at: dt,
-            updated_at: dt,
-          };
+        const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
+        const q2 = {
+          username: req.body.email,
+          password: hashedPassword,
+          firstname: req.body.firstname,
+          created_at: dt,
+          updated_at: dt,
+        };
 
         var query = `INSERT users SET ?`;
         db.query(query, q2);
@@ -119,14 +118,13 @@ app.get("/profile", (req, res) => {
 app.put("/profile-update", (req, res) => {
   db.beginTransaction();
   try {
-    var d = new Date(),
-      dt = d.toISOString().replace("T", " ").substring(0, 19),
-      q2 = {
-        firstname: req.body.formData.firstname,
-        lastname: req.body.formData.lastname,
-        dob: req.body.formData.dob,
-        updated_at: dt,
-      };
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
+    const q2 = {
+      firstname: req.body.formData.firstname,
+      lastname: req.body.formData.lastname,
+      dob: req.body.formData.dob,
+      updated_at: dt,
+    };
     const query = `UPDATE users SET ? WHERE id = ${req.user.id}`;
     db.query(query, q2);
     db.commit();
@@ -142,12 +140,11 @@ app.put("/password-update", (req, res) => {
   db.beginTransaction();
   try {
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
-    var d = new Date(),
-      dt = d.toISOString().replace("T", " ").substring(0, 19),
-      q2 = {
-        password: hashedPassword,
-        updated_at: dt,
-      };
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
+    const q2 = {
+      password: hashedPassword,
+      updated_at: dt,
+    };
 
     const query = `UPDATE users SET ? WHERE id = ${req.user.id}`;
     db.query(query, q2);
@@ -218,14 +215,14 @@ app.get("/articles", (req, res) => {
         FROM articles a
         LEFT JOIN categories c
         ON a.category_id = c.id
-        WHERE a.category_id = ${categoryId} AND a.deleted_at IS NULL;
+        WHERE a.category_id = ${categoryId} AND a.deleted_at IS NULL AND a.published = 1;
         SELECT id, name FROM categories WHERE deleted_at IS NULL LIMIT 5`;
     } else {
       query = `SELECT a.*, c.name as category_name 
         FROM articles a
         LEFT JOIN categories c
         ON a.category_id = c.id
-        WHERE a.deleted_at IS NULL;
+        WHERE a.deleted_at IS NULL AND a.published = 1;
         SELECT id, name FROM categories WHERE deleted_at IS NULL LIMIT 5`;
     }
 
@@ -321,8 +318,7 @@ app.post("/start-quiz", (req, res) => {
   db.beginTransaction();
 
   try {
-    const d = new Date();
-    const dt = d.toISOString().replace("T", " ").substring(0, 19);
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const user_id = req.user.id;
     const quiz_id = req.body.quiz_id;
     const q1 = {
@@ -356,8 +352,7 @@ app.post("/quiz-question-check", (req, res) => {
     db.query(query, (err, data) => {
       const correctAns = data.find((d) => d.is_correct);
 
-      const d = new Date();
-      const dt = d.toISOString().replace("T", " ").substring(0, 19);
+      const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
       const v1 = {
         attempt_id: req.body.attempt_id,
         question_id: req.body.question_id,
@@ -397,15 +392,13 @@ app.post("/quiz-submit", (req, res) => {
     db.query(query, (err, data) => {
       const num = data.length;
       const corr = data.filter((d) => d.is_correct).length;
-
-      var d = new Date(),
-        dt = d.toISOString().replace("T", " ").substring(0, 19),
-        q2 = {
-          question_correct: corr,
-          question_number: num,
-          completed: true,
-          updated_at: dt,
-        };
+      const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
+      const q2 = {
+        question_correct: corr,
+        question_number: num,
+        completed: true,
+        updated_at: dt,
+      };
 
       const q1 = `UPDATE attempts SET ? WHERE id = ${req.body.attempt_id}`;
 

@@ -208,6 +208,7 @@ export function ArticleCreate() {
     subtitle: "",
     authors: "",
     url: "",
+    published: -1,
     content: "",
   });
   const [categories, setCategories] = useState<Category[]>([]);
@@ -226,10 +227,6 @@ export function ArticleCreate() {
     }
   };
 
-  const handleCancel = () => {
-    router.push("/admin/article");
-  };
-
   useEffect(() => {
     loadCategories();
   }, []);
@@ -242,6 +239,8 @@ export function ArticleCreate() {
       console.error(err);
     }
   };
+
+  const handleCancel = () => router.push("/admin/article");
 
   return (
     <DashboardContent>
@@ -317,6 +316,25 @@ export function ArticleCreate() {
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="published"
+                    name="published"
+                    label="Status"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    select
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Status ---
+                    </MenuItem>
+                    <MenuItem value={1}>Published</MenuItem>
+                    <MenuItem value={0}>Unpublished</MenuItem>
+                  </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
                 <FormControl fullWidth>
                   <TextField
                     id="content"
@@ -359,13 +377,14 @@ export function ArticleEdit() {
     subtitle: "",
     authors: "",
     url: "",
+    published: -1,
     content: "",
   });
   const [categories, setCategories] = useState<Category[]>([]);
   const [image, setImage] = useState<File | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { category_id, title, subtitle, authors, url, content } = article;
+  const { category_id, title, subtitle, authors, url, published, content } = article;
 
   useEffect(() => {
     loadData();
@@ -530,6 +549,26 @@ export function ArticleEdit() {
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
+                  <TextField
+                    fullWidth
+                    id="published"
+                    name="published"
+                    label="Status"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    select
+                    value={article.published}
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Status ---
+                    </MenuItem>
+                    <MenuItem value={1}>Published</MenuItem>
+                    <MenuItem value={0}>Unpublished</MenuItem>
+                  </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
                 <FormControl fullWidth>
                   <TextField
                     id="content"
