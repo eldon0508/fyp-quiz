@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import Grid from "@mui/material/Grid2";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/system";
-import { Button } from "@mui/material";
-import axios from "axios";
+import Button from "@mui/material/Button";
 
 const FormGrid = styled(Grid)(() => ({
   display: "flex",
@@ -16,16 +14,16 @@ const FormGrid = styled(Grid)(() => ({
 }));
 
 export default function DetailsForm({ profile }) {
-  const [formData, setFormData] = useState({});
-  const [editDisabled, setEditDisabled] = useState(true);
+  const [formData, setFormData] = useState({
+    firstname: profile.firstname,
+    lastname: profile.lastname,
+    dob: profile.dob,
+  });
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  const handleEdit = () => setEditDisabled(false);
-  const handleCancel = () => setEditDisabled(true);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,17 +42,16 @@ export default function DetailsForm({ profile }) {
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <FormGrid size={{ xs: 12, md: 6 }}>
-          <FormLabel htmlFor="firstnname" required>
+          <FormLabel htmlFor="firstname" required>
             First name
           </FormLabel>
           <OutlinedInput
-            id="firstnname"
-            name="firstnname"
+            id="firstname"
+            name="firstname"
             required
             size="small"
             onChange={handleChange}
-            value={profile.firstname}
-            disabled={editDisabled}
+            defaultValue={profile.firstname ?? ""}
           />
         </FormGrid>
         <FormGrid size={{ xs: 12, md: 6 }}>
@@ -67,95 +64,25 @@ export default function DetailsForm({ profile }) {
             required
             size="small"
             onChange={handleChange}
-            value={profile.lastname}
-            disabled={editDisabled}
+            defaultValue={profile.lastname ?? ""}
           />
         </FormGrid>
-        <FormGrid size={{ xs: 12 }}>
-          <FormLabel htmlFor="address1" required>
-            Address line 1
+        <FormGrid size={{ xs: 12, md: 6 }}>
+          <FormLabel htmlFor="dob" required>
+            Date of Birth
           </FormLabel>
           <OutlinedInput
-            id="address1"
-            name="address1"
-            placeholder="Street name and number"
-            autoComplete="shipping address-line1"
+            id="dob"
+            name="dob"
+            type="date"
             required
             size="small"
             onChange={handleChange}
+            defaultValue={profile.dob ?? ""}
           />
         </FormGrid>
-        <FormGrid size={{ xs: 12 }}>
-          <FormLabel htmlFor="address2">Address line 2</FormLabel>
-          <OutlinedInput
-            id="address2"
-            name="address2"
-            placeholder="Apartment, suite, unit, etc. (optional)"
-            autoComplete="shipping address-line2"
-            required
-            size="small"
-            onChange={handleChange}
-          />
-        </FormGrid>
-        <FormGrid size={{ xs: 6 }}>
-          <FormLabel htmlFor="city" required>
-            City
-          </FormLabel>
-          <OutlinedInput
-            id="city"
-            name="city"
-            placeholder="New York"
-            autoComplete="City"
-            required
-            size="small"
-            onChange={handleChange}
-          />
-        </FormGrid>
-        <FormGrid size={{ xs: 6 }}>
-          <FormLabel htmlFor="state" required>
-            State
-          </FormLabel>
-          <OutlinedInput
-            id="state"
-            name="state"
-            placeholder="NY"
-            autoComplete="State"
-            required
-            size="small"
-          />
-        </FormGrid>
-        <FormGrid size={{ xs: 6 }}>
-          <FormLabel htmlFor="zip" required>
-            Zip / Postal code
-          </FormLabel>
-          <OutlinedInput
-            id="zip"
-            name="zip"
-            placeholder="12345"
-            autoComplete="shipping postal-code"
-            required
-            size="small"
-          />
-        </FormGrid>
-        <FormGrid size={{ xs: 6 }}>
-          <FormLabel htmlFor="country" required>
-            Country
-          </FormLabel>
-          <OutlinedInput
-            id="country"
-            name="country"
-            placeholder="United States"
-            autoComplete="shipping country"
-            required
-            size="small"
-          />
-        </FormGrid>
+        <FormGrid size={{ xs: 12, md: 6 }}></FormGrid>
         <Stack spacing={2} direction="row">
-          {editDisabled ? (
-            <Button onClick={handleEdit}>Edit</Button>
-          ) : (
-            <Button onClick={handleCancel}>Cancel</Button>
-          )}
           <Button type="submit" variant="contained">
             Submit
           </Button>

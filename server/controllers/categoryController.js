@@ -29,7 +29,7 @@ const store = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 
@@ -60,7 +60,7 @@ const update = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 
@@ -77,7 +77,7 @@ const destroy = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 

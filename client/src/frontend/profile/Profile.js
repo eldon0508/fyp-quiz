@@ -12,6 +12,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import DetailsForm from "./components/DetailsForm";
 import PasswordForm from "./components/PasswordForm";
+import Attempts from "./components/Attempts";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -36,22 +37,26 @@ CustomTabPanel.propTypes = {
 };
 
 export default function Profile(props) {
+  const [profile, setProfile] = useState({
+    firstname: "",
+    lastname: "",
+    dob: "",
+  });
   const [tab, setTab] = useState(0);
-  const [profile, setProfile] = useState({});
 
-  const loadProfile = async () => {
-    const res = await axios.get("/profile");
-    if (res.data.success) {
-      setProfile(res.data.profile);
-    }
+  const handleTabChange = (event, newValue) => {
+    setTab(newValue);
   };
 
   useEffect(() => {
     loadProfile();
   }, []);
 
-  const handleTabChange = (event, newValue) => {
-    setTab(newValue);
+  const loadProfile = async () => {
+    const res = await axios.get("/profile");
+    if (res.data.success) {
+      setProfile(res.data.profile);
+    }
   };
 
   return (
@@ -66,19 +71,19 @@ export default function Profile(props) {
               onChange={handleTabChange}
               aria-label="basic tabs example"
             >
-              <Tab label="Details" value={0} />
-              <Tab label="Password" value={1} />
-              <Tab label="Attempts" value={2} />
+              <Tab label="Attempts" value={0} />
+              <Tab label="Details" value={1} />
+              <Tab label="Password" value={2} />
             </Tabs>
           </Box>
           <CustomTabPanel value={tab} index={0}>
-            <DetailsForm profile={profile} />
+            <Attempts />
           </CustomTabPanel>
           <CustomTabPanel value={tab} index={1}>
-            <PasswordForm />
+            <DetailsForm profile={profile} />
           </CustomTabPanel>
           <CustomTabPanel value={tab} index={2}>
-            Item Three
+            <PasswordForm />
           </CustomTabPanel>
         </Container>
       </div>

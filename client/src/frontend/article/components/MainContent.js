@@ -17,6 +17,7 @@ import { styled } from "@mui/material/styles";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import RssFeedRoundedIcon from "@mui/icons-material/RssFeedRounded";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const cardData = [
   {
@@ -109,9 +110,13 @@ const StyledTypography = styled(Typography)({
   WebkitLineClamp: 2,
   overflow: "hidden",
   textOverflow: "ellipsis",
+  textDecoration: "none",
 });
 
-function Author({ authors }) {
+function Author({ authors, date }) {
+  const auth = authors.split(",");
+  const created_at = new Date(date).toDateString();
+
   return (
     <Box
       sx={{
@@ -132,20 +137,18 @@ function Author({ authors }) {
         }}
       >
         <AvatarGroup max={3}>
-          {authors.map((author, index) => (
+          {auth.map((author, index) => (
             <Avatar
               key={index}
-              alt={author.name}
-              src={author.avatar}
+              alt={author}
+              src="/static/images/avatar/5.jpg"
               sx={{ width: 24, height: 24 }}
             />
           ))}
         </AvatarGroup>
-        <Typography variant="caption">
-          {authors.map((author) => author.name).join(", ")}
-        </Typography>
+        <Typography variant="caption">{auth.join(", ")}</Typography>
       </Box>
-      <Typography variant="caption">July 14, 2021</Typography>
+      <Typography variant="caption">{created_at.slice(4)}</Typography>
     </Box>
   );
 }
@@ -289,47 +292,61 @@ export default function MainContent() {
         </Box>
       </Box>
       <Grid container spacing={2} columns={12}>
-        {articles.map((article) => (
-          <Grid size={{ xs: 12, md: 6 }}>
-            <SyledCard
-              variant="outlined"
-              onFocus={() => handleFocus(0)}
-              onBlur={handleBlur}
-              tabIndex={0}
-              className={focusedCardIndex === 0 ? "Mui-focused" : ""}
-            >
-              {/* <CardMedia
-                component="img"
-                alt={article.title}
-                image={article.img}
-                sx={{
-                  aspectRatio: "16 / 9",
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                }}
-              /> */}
-              <SyledCardContent>
-                <Typography gutterBottom variant="caption" component="div">
-                  {article.category_name}
-                </Typography>
-                <Typography gutterBottom variant="h6" component="div">
-                  {article.title}
-                </Typography>
-                <StyledTypography
-                  variant="body2"
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  {article.summary}
-                </StyledTypography>
-              </SyledCardContent>
-              {article.authors}
-              {/* <Author authors={cardData.authors} /> */}
-            </SyledCard>
-          </Grid>
-        ))}
+        {articles && articles.length > 0 ? (
+          <>
+            {articles.map((article) => (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Link to={`/articles/${article.id}`}>
+                  <SyledCard
+                    variant="outlined"
+                    onFocus={() => handleFocus(0)}
+                    onBlur={handleBlur}
+                    tabIndex={0}
+                    className={focusedCardIndex === 0 ? "Mui-focused" : ""}
+                  >
+                    {/* <CardMedia
+                      component="img"
+                      alt={article.title}
+                      image={article.img}
+                      sx={{
+                        aspectRatio: "16 / 9",
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                      }}
+                    /> */}
+                    <SyledCardContent>
+                      <Typography
+                        gutterBottom
+                        variant="caption"
+                        component="div"
+                      >
+                        {article.category_name}
+                      </Typography>
+                      <Typography gutterBottom variant="h6" component="div">
+                        {article.title}
+                      </Typography>
+                      <StyledTypography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {article.summary}
+                      </StyledTypography>
+                    </SyledCardContent>
+                    <Author
+                      authors={article.authors}
+                      date={article.updated_at}
+                    />
+                  </SyledCard>
+                </Link>
+              </Grid>
+            ))}
+          </>
+        ) : (
+          <>No artciels</>
+        )}
 
-        <Grid size={{ xs: 12, md: 6 }}>
+        {/* <Grid size={{ xs: 12, md: 6 }}>
           <SyledCard
             variant="outlined"
             onFocus={() => handleFocus(0)}
@@ -551,7 +568,7 @@ export default function MainContent() {
             </SyledCardContent>
             <Author authors={cardData[5].authors} />
           </SyledCard>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );

@@ -19,7 +19,8 @@ import { Iconify } from "src/components/iconify";
 
 export type UserProps = {
   id: string;
-  fullname: string;
+  firstname: string;
+  lastname: string;
   created_at: string;
 };
 
@@ -56,7 +57,7 @@ export function UserTableRow({ row, selected, onSelectRow, reloadDatas }: UserTa
         <TableCell component="th" scope="row">
           <Box gap={2} display="flex" alignItems="center">
             {/* <Avatar alt={row.name} src={row.avatarUrl} /> */}
-            {row.fullname}
+            {row.firstname} {row.lastname}
           </Box>
         </TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>

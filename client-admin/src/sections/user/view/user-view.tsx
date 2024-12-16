@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -23,6 +23,7 @@ import { UserTableRow } from "../user-table-row";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { UserProps } from "../user-table-row";
+import { useRouter } from "../../../routes/hooks/use-router";
 
 // ----------------------------------------------------------------------
 
@@ -82,7 +83,7 @@ export function UserView() {
                   )
                 }
                 headLabel={[
-                  { id: "fullname", label: "Name" },
+                  { id: "fullname", label: "Full Name" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
@@ -189,8 +190,8 @@ export function useTable() {
 }
 
 export function UserCreate() {
-  const navigate = useNavigate();
-  const [user, setUser] = useState({ fullname: "", username: "" });
+  const router = useRouter();
+  const [user, setUser] = useState({ firstname: "", lastname: "", username: "" });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -200,15 +201,13 @@ export function UserCreate() {
     e.preventDefault();
     try {
       await axios.post(`http://localhost:3001/admin/user/store`, user);
-      navigate("/admin/user");
+      router.push("/admin/user");
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleCancel = () => {
-    navigate("/admin/user");
-  };
+  const handleCancel = () => router.push("/admin/user");
 
   return (
     <DashboardContent>
@@ -225,9 +224,21 @@ export function UserCreate() {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="fullname"
-                    name="fullname"
-                    label="Full Name"
+                    id="firstname"
+                    name="firstname"
+                    label="First Name"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    fullWidth
+                    id="lastname"
+                    name="lastname"
+                    label="Last Name"
                     required
                     onChange={(e) => onInputChange(e)}
                   />
@@ -268,9 +279,9 @@ export function UserCreate() {
 
 export function UserEdit() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [user, setUser] = useState({ fullname: "", username: "" });
-  const { fullname, username } = user;
+  const router = useRouter();
+  const [user, setUser] = useState({ firstname: "", lastname: "", username: "", dob: "" });
+  const { firstname, lastname, username, dob } = user;
 
   useEffect(() => {
     loadData();
@@ -293,15 +304,13 @@ export function UserEdit() {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:3001/admin/user/${id}/update`, user);
-      navigate("/admin/user");
+      router.push("/admin/user");
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleCancel = () => {
-    navigate("/admin/user");
-  };
+  const handleCancel = () => router.push("/admin/user");
 
   return (
     <DashboardContent>
@@ -318,12 +327,25 @@ export function UserEdit() {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="fullname"
-                    name="fullname"
-                    label="Full Name"
+                    id="firstname"
+                    name="firstname"
+                    label="First Name"
                     required
                     onChange={(e) => onInputChange(e)}
-                    value={fullname}
+                    value={firstname}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    fullWidth
+                    id="lastname"
+                    name="lastname"
+                    label="Last Name"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    value={lastname}
                   />
                 </FormControl>
               </Grid>
@@ -336,6 +358,19 @@ export function UserEdit() {
                     required
                     onChange={(e) => onInputChange(e)}
                     value={username}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="dob"
+                    name="dob"
+                    label="Date of Birth"
+                    type="date"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    value={dob}
                   />
                 </FormControl>
               </Grid>

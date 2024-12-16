@@ -38,7 +38,8 @@ module.exports = function (passport) {
       done(null, {
         id: user.id,
         username: user.username,
-        fullname: user.fullname,
+        firstname: user.firstname,
+        lastname: user.lastname,
         role: user.role,
       });
     });

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -12,6 +12,11 @@ import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import { Grid, MenuItem, TextField, CardActions, CardContent, FormControl } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
@@ -23,6 +28,7 @@ import { ArticleTableHead } from "../article-table-head";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { ArticleProps } from "../article-table-row";
+import { useRouter } from "../../../routes/hooks/use-router";
 
 // ----------------------------------------------------------------------
 
@@ -195,7 +201,7 @@ export function useTable() {
 }
 
 export function ArticleCreate() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [article, setArticle] = useState({
     category_id: -1,
     title: "",
@@ -214,14 +220,14 @@ export function ArticleCreate() {
     e.preventDefault();
     try {
       await axios.post(`http://localhost:3001/admin/article/store`, article);
-      navigate("/admin/article");
+      router.push("/admin/article");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/article");
+    router.push("/admin/article");
   };
 
   useEffect(() => {
@@ -299,7 +305,7 @@ export function ArticleCreate() {
                     fullWidth
                     id="authors"
                     name="authors"
-                    label="authors"
+                    label="Authors"
                     required
                     onChange={(e) => onInputChange(e)}
                   />
@@ -345,8 +351,8 @@ export function ArticleCreate() {
 }
 
 export function ArticleEdit() {
+  const router = useRouter();
   const { id } = useParams();
-  const navigate = useNavigate();
   const [article, setArticle] = useState({
     category_id: -1,
     title: "",
@@ -356,6 +362,8 @@ export function ArticleEdit() {
     content: "",
   });
   const [categories, setCategories] = useState<Category[]>([]);
+  const [image, setImage] = useState<File | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const { category_id, title, subtitle, authors, url, content } = article;
 
@@ -377,19 +385,45 @@ export function ArticleEdit() {
     setArticle({ ...article, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement & {
+      files: FileList;
+    };
+    setImage(target.files[0]);
+    console.log(image, target.files[0], target.id, "\n", target.name);
+  };
+
+  const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/article/${id}/update`, article);
-      navigate("/admin/article");
+      const config = {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      };
+      const formData = {
+        image: image ?? null,
+      };
+      await axios.post(`http://localhost:3001/admin/article/${id}/upload`, formData, config);
+      router.push("/admin/article");
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleCancel = () => {
-    navigate("/admin/article");
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:3001/admin/article/${id}/update`, article);
+      router.push("/admin/article");
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  const handleCancel = () => router.push("/admin/article");
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
   return (
     <DashboardContent>
@@ -399,6 +433,25 @@ export function ArticleEdit() {
         </Typography>
       </Box>
       <Card>
+        <Dialog
+          open={isOpen}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <form onSubmit={(e) => handleUpload(e)}>
+            <DialogTitle id="alert-dialog-title">Upload Image</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                <TextField type="file" name="image" id="image" onChange={handleImageChange} />
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Close</Button>
+              <Button type="submit">Upload</Button>
+            </DialogActions>
+          </form>
+        </Dialog>
         <form onSubmit={(e) => handleSubmit(e)}>
           <CardContent>
             <Grid container spacing={2} padding={3}>
@@ -493,6 +546,11 @@ export function ArticleEdit() {
           </CardContent>
           <CardActions>
             <Grid container spacing={2} padding={3} direction="row" justifyContent="flex-end" alignItems="center">
+              <Grid item>
+                <Button type="button" variant="contained" color="info" onClick={handleOpen}>
+                  Upload Image
+                </Button>
+              </Grid>
               <Grid item>
                 <Button type="button" variant="contained" color="secondary" onClick={handleCancel}>
                   Cancel

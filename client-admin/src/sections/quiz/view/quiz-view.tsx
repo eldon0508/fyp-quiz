@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -23,6 +23,7 @@ import { QuizTableRow } from "../quiz-table-row";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { QuizProps } from "../quiz-table-row";
+import { useRouter } from "../../../routes/hooks/use-router";
 
 // ----------------------------------------------------------------------
 
@@ -190,7 +191,7 @@ export function useTable() {
 }
 
 export function QuizCreate() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [quiz, setQuiz] = useState({
     name: "",
     description: "",
@@ -204,15 +205,13 @@ export function QuizCreate() {
     e.preventDefault();
     try {
       await axios.post(`http://localhost:3001/admin/quiz/store`, quiz);
-      navigate("/admin/quiz");
+      router.push("/admin/quiz");
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleCancel = () => {
-    navigate("/admin/quiz");
-  };
+  const handleCancel = () => router.push("/admin/quiz");
 
   return (
     <DashboardContent>
@@ -265,7 +264,7 @@ export function QuizCreate() {
 
 export function QuizEdit() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [quiz, setQuiz] = useState({
     name: "",
     description: "",
@@ -294,15 +293,13 @@ export function QuizEdit() {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:3001/admin/quiz/${id}/update`, quiz);
-      navigate("/admin/quiz");
+      router.push("/admin/quiz");
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleCancel = () => {
-    navigate("/admin/quiz");
-  };
+  const handleCancel = () => router.push("/admin/quiz");
 
   return (
     <DashboardContent>

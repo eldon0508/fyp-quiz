@@ -12,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/articles" element={<Article />} />
+        {/* <Route path="/articles/:id" element={<ArticlePage />} /> */}
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/signin" element={<SignInSide />} />

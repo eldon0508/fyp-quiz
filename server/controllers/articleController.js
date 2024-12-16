@@ -1,4 +1,7 @@
 const db = require("../database");
+const { v4: uuidv4 } = require("uuid");
+const fs = require("fs");
+const path = require("path");
 
 const index = (req, res) => {
   const query = `
@@ -32,7 +35,7 @@ const store = (req, res) => {
       category_id: req.body.category_id,
       title: req.body.title,
       subtitle: req.body.subtitle,
-      author: req.body.author,
+      authors: req.body.authors,
       url: req.body.url,
       content: req.body.content,
       created_at: dt,
@@ -47,7 +50,7 @@ const store = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 
@@ -69,7 +72,7 @@ const update = (req, res) => {
       category_id: req.body.category_id,
       title: req.body.title,
       subtitle: req.body.subtitle,
-      author: req.body.author,
+      authors: req.body.authors,
       url: req.body.url,
       content: req.body.content,
       updated_at: dt,
@@ -82,7 +85,50 @@ const update = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
+  }
+};
+
+const upload = (req, res) => {
+  db.beginTransaction();
+
+  try {
+    console.log(req.files, "ababab", req.body);
+    var storeDir = "/images/articles",
+      dir = path.dirname(__dirname) + "/public" + storeDir;
+
+    // If './public/images/products' not exist, create one
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    // Retrieve image information and generate new name
+    var image = req.files.image,
+      ext = path.extname(image.name),
+      oldName = image.name,
+      newName = uuidv4() + ext,
+      uploadPath = dir + "/" + newName,
+      storePath = storeDir + "/" + newName;
+
+    // Use the mv() method to place the file somewhere on your server
+    image.mv(uploadPath);
+
+    // Finish uploading and rename to unique filename
+    fs.rename(dir + "/" + oldName, dir + "/" + newName, () => {});
+
+    const q2 = {
+      image: storePath,
+      image_extension: ext,
+    };
+
+    const query = `UPDATE articles SET ? WHERE id = "${req.params.id}"`;
+    db.query(query, q2);
+    db.commit();
+    return res.json({ success: true });
+  } catch (err) {
+    db.rollback();
+    console.error(err);
+    return res.status(500).json({ success: false });
   }
 };
 
@@ -99,8 +145,8 @@ const destroy = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 
-module.exports = { index, create, store, edit, update, destroy };
+module.exports = { index, create, store, edit, update, upload, destroy };

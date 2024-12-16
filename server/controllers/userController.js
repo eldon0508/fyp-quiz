@@ -15,7 +15,8 @@ const index = (req, res) => {
 //     const d = new Date();
 //     const dt = d.toISOString().replace("T", " ").substring(0, 19);
 //     const q2 = {
-//       fullname: req.body.fullname,
+//       firstname: req.body.firstname,
+//       lastname: req.body.lastname,
 //       description: req.body.description,
 //       created_at: dt,
 //       updated_at: dt,
@@ -29,12 +30,12 @@ const index = (req, res) => {
 //   } catch (err) {
 //     db.rollback();
 //     console.error(err);
-//     return res.status(500);
+//     return res.status(500).json({ success: false });
 //   }
 // };
 
 const edit = (req, res) => {
-  const query = `SELECT username, fullname, dob FROM users WHERE id = ${req.params.id}`;
+  const query = `SELECT username, firstname, lastname, dob FROM users WHERE id = ${req.params.id}`;
   db.query(query, (err, data) => {
     if (err) return res.json(err);
     return res.json({ data: data[0] });
@@ -48,8 +49,10 @@ const update = async (req, res) => {
     const d = new Date();
     const dt = d.toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
-      fullname: req.body.fullname,
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
       username: req.body.username,
+      dob: req.body.dob,
       updated_at: dt,
     };
     const query = `UPDATE users SET ? WHERE id = "${req.params.id}"`;
@@ -60,7 +63,7 @@ const update = async (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 
@@ -77,7 +80,7 @@ const destroy = (req, res) => {
   } catch (err) {
     db.rollback();
     console.error(err);
-    return res.status(500);
+    return res.status(500).json({ success: false });
   }
 };
 

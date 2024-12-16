@@ -119,15 +119,17 @@ app.get("/profile", (req, res) => {
 app.put("/profile-update", (req, res) => {
   db.beginTransaction();
   try {
-    console.log(req.body, "bodydydyddy");
     var d = new Date(),
       dt = d.toISOString().replace("T", " ").substring(0, 19),
       q2 = {
+        firstname: req.body.formData.firstname,
+        lastname: req.body.formData.lastname,
+        dob: req.body.formData.dob,
         updated_at: dt,
       };
     const query = `UPDATE users SET ? WHERE id = ${req.user.id}`;
-    // db.query(query, q2);
-    // db.commit();
+    db.query(query, q2);
+    db.commit();
     return res.json({ success: true });
   } catch (err) {
     db.rollback();
@@ -139,7 +141,6 @@ app.put("/profile-update", (req, res) => {
 app.put("/password-update", (req, res) => {
   db.beginTransaction();
   try {
-    console.log(req.body, "abababaa");
     const hashedPassword = bcrypt.hashSync(req.body.password, saltRounds);
     var d = new Date(),
       dt = d.toISOString().replace("T", " ").substring(0, 19),
@@ -159,21 +160,52 @@ app.put("/password-update", (req, res) => {
   }
 });
 
-app.get("/user-attempts", (req, res) => {
-  const query = `SELECT * FROM attempts a
-      LEFT JOIN attempt_questions aq
-      ON aq.attempt_id = a.id
-      WHERE a.user_id = ${req.user.id}
-      AND a.deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    // time use updated - created
-    const completed = data.filter((d) => d.completed);
-    const uncompleted = data.filter((d) => !d.completed);
-    return res.json({
-      completed: completed,
-      uncompleted: uncompleted,
+app.get("/profile-attempts", (req, res) => {
+  try {
+    const q = `SELECT * FROM attempt_questions aq
+  LEFT JOIN attempts a
+  ON a.id = aq.attempt_id
+  WHERE a.user_id = 2
+  AND a.deleted_at IS NULL`;
+
+    db.query(q, (err, data) => {
+      if (err) return res.status(500).json({ success: false, error: err });
+
+      const groupedAttempts = data.reduce((acc, item) => {
+        const attempt_id = item.attempt_id;
+        if (!acc[attempt_id]) {
+          acc[attempt_id] = {
+            attempt_id: item.attempt_id,
+            quiz_id: item.quiz_id,
+            question_correct: item.question_correct,
+            question_number: item.question_number,
+            completed: item.completed ? "Completed" : "Uncompleted",
+            timeUsed: (item.updated_at - item.created_at) / 1000,
+            created_at: item.created_at,
+            questions: [],
+          };
+        }
+
+        acc[attempt_id].questions.push({
+          question_id: item.question_id,
+          selected_answer: item.selected_answer,
+          correct_answer: item.correct_answer,
+          is_correct: item.is_correct,
+        });
+        return acc;
+      }, {});
+
+      const groupedAttemptsArray = Object.values(groupedAttempts);
+
+      return res.json({
+        success: true,
+        data: groupedAttemptsArray,
+      });
     });
-  });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false });
+  }
 });
 
 app.get("/articles", (req, res) => {
@@ -204,6 +236,19 @@ app.get("/articles", (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ success: false, error: err });
+  }
+});
+
+app.get("/articles/:id", (req, res) => {
+  try {
+    const query = `SELECT * FROM articles WHERE id = ${req.params.id} AND deleted_at IS NULL`;
+
+    db.query(query, (err, data) => {
+      return res.json({ success: true, data: data });
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false });
   }
 });
 

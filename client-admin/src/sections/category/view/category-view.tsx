@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -23,6 +23,7 @@ import { CategoryTableRow } from "../category-table-row";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { CategoryProps } from "../category-table-row";
+import { useRouter } from "../../../routes/hooks";
 
 // ----------------------------------------------------------------------
 
@@ -190,7 +191,7 @@ export function useTable() {
 }
 
 export function CategoryCreate() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [category, setCategory] = useState({ name: "", description: "" });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -201,14 +202,14 @@ export function CategoryCreate() {
     e.preventDefault();
     try {
       await axios.post(`http://localhost:3001/admin/category/store`, category);
-      navigate("/admin/category");
+      router.push("/admin/category");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/category");
+    router.push("/admin/category");
   };
 
   return (
@@ -262,7 +263,7 @@ export function CategoryCreate() {
 
 export function CategoryEdit() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [category, setCategory] = useState({ name: "", description: "" });
   const { name, description } = category;
 
@@ -287,14 +288,14 @@ export function CategoryEdit() {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:3001/admin/category/${id}/update`, category);
-      navigate("/admin/category");
+      router.push("/admin/category");
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleCancel = () => {
-    navigate("/admin/category");
+    router.push("/admin/category");
   };
 
   return (

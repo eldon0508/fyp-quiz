@@ -72,7 +72,7 @@ export default function SignUp(props) {
   const validateInputs = () => {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
-    const fullname = document.getElementById("fullname");
+    const firstname = document.getElementById("firstname");
 
     let isValid = true;
 
@@ -94,7 +94,7 @@ export default function SignUp(props) {
       setPasswordErrorMessage("");
     }
 
-    if (!fullname.value || fullname.value.length < 1) {
+    if (!firstname.value || firstname.value.length < 1) {
       setNameError(true);
       setNameErrorMessage("Full Name is required.");
       isValid = false;
