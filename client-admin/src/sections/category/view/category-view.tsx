@@ -208,9 +208,7 @@ export function CategoryCreate() {
     }
   };
 
-  const handleCancel = () => {
-    router.push("/admin/category");
-  };
+  const handleCancel = () => router.back();
 
   return (
     <DashboardContent>
@@ -294,9 +292,7 @@ export function CategoryEdit() {
     }
   };
 
-  const handleCancel = () => {
-    router.push("/admin/category");
-  };
+  const handleCancel = () => router.back();
 
   return (
     <DashboardContent>

@@ -78,8 +78,10 @@ app.post("/signin", (req, res, next) => {
         if (err) {
           console.error(err);
         }
-        res.json({ success: true });
+        return res.json({ success: true });
       });
+    } else {
+      return res.json({ success: false });
     }
   })(req, res, next);
 });
@@ -90,7 +92,7 @@ app.post("/signout", (req, res) => {
       return next(err);
     }
     console.log("user logout success");
-    res.redirect("/signin");
+    res.redirect("/articles");
   });
 });
 
@@ -157,38 +159,72 @@ app.put("/password-update", (req, res) => {
   }
 });
 
+//!!!!! user_id
 app.get("/profile-attempts", (req, res) => {
   try {
-    const q = `SELECT * FROM attempt_questions aq
-  LEFT JOIN attempts a
-  ON a.id = aq.attempt_id
-  WHERE a.user_id = 2
-  AND a.deleted_at IS NULL`;
+    // const q = `SELECT *, a.created_at AS a_created_at, a.updated_at AS a_updated_at
+    //     FROM attempt_questions aq
+    //     LEFT JOIN attempts a
+    //     ON a.id = aq.attempt_id
+    //     LEFT JOIN quizzes q
+    //     ON q.id = a.quiz_id
+    //     WHERE a.user_id = 2
+    //     AND a.deleted_at IS NULL`;
+
+    const q = `SELECT * FROM quizzes q
+          RIGHT JOIN attempts a
+          ON q.id = a.quiz_id
+          WHERE a.user_id = 2
+          AND a.deleted_at IS NULL`;
 
     db.query(q, (err, data) => {
       if (err) return res.status(500).json({ success: false, error: err });
 
       const groupedAttempts = data.reduce((acc, item) => {
-        const attempt_id = item.attempt_id;
+        const attempt_id = item.id;
         if (!acc[attempt_id]) {
           acc[attempt_id] = {
-            attempt_id: item.attempt_id,
-            quiz_id: item.quiz_id,
+            id: item.id,
             question_correct: item.question_correct,
             question_number: item.question_number,
             completed: item.completed ? "Completed" : "Uncompleted",
             timeUsed: (item.updated_at - item.created_at) / 1000,
-            created_at: item.created_at,
-            questions: [],
+            quiz: {
+              id: item.quiz_id,
+              name: item.name,
+              description: item.description,
+              level: item.level,
+            },
           };
         }
 
-        acc[attempt_id].questions.push({
-          question_id: item.question_id,
-          selected_answer: item.selected_answer,
-          correct_answer: item.correct_answer,
-          is_correct: item.is_correct,
-        });
+        // const groupedAttempts = data.reduce((acc, item) => {
+        //   const attempt_id = item.attempt_id;
+        //   if (!acc[attempt_id]) {
+        //     acc[attempt_id] = {
+        //       id: item.attempt_id,
+        //       question_correct: item.question_correct,
+        //       question_number: item.question_number,
+        //       completed: item.completed ? "Completed" : "Uncompleted",
+        //       timeUsed: (item.a_updated_at - item.a_created_at) / 1000,
+        //       // created_at: item.a_created_at,
+        //       // updated_at: item.a_updated_at,
+        //       quiz: {
+        //         id: item.quiz_id,
+        //         name: item.name,
+        //         description: item.description,
+        //         level: item.level,
+        //       },
+        //       questions: [],
+        //     };
+        //   }
+
+        //   acc[attempt_id].questions.push({
+        //     id: item.question_id,
+        //     selected_answer: item.selected_answer,
+        //     correct_answer: item.correct_answer,
+        //     is_correct: item.is_correct,
+        //   });
         return acc;
       }, {});
 
@@ -200,6 +236,46 @@ app.get("/profile-attempts", (req, res) => {
       });
     });
   } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false });
+  }
+});
+
+app.post("/profile-quiz-feedback", (req, res) => {
+  db.beginTransaction();
+  try {
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
+    const user_id = req.user.id;
+    const q1 = {
+      user_id: user_id,
+      quiz_id: req.body.quizId,
+      feedback: req.body.feedback,
+      created_at: dt,
+      updated_at: dt,
+    };
+
+    const q = `INSERT INTO quiz_feedbacks SET ?`;
+    db.query(q, q1);
+    db.commit();
+    return res.json({ success: true });
+  } catch (error) {
+    db.rollback();
+    console.error(err);
+    return res.status(500).json({ success: false });
+  }
+});
+
+app.delete("/profile-delete", (req, res) => {
+  console.log(req.user, req.body, "abababba");
+  db.beginTransaction();
+  try {
+    const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
+    const query = `UPDATE users SET deleted_at = "${dt}" WHERE id = "${req.user.id}"`;
+    db.query(query);
+    db.commit();
+    return res.json({ success: true });
+  } catch (err) {
+    db.rollback();
     console.error(err);
     return res.status(500).json({ success: false });
   }
@@ -446,11 +522,15 @@ app.get("/admin/signout", (req, res) => {
 const categoryRouter = require("./routes/category");
 const articleRouter = require("./routes/article");
 const quizRouter = require("./routes/quiz");
+const questionRouter = require("./routes/question");
+const answerRouter = require("./routes/answer");
 const userRoute = require("./routes/user");
 
 app.use("/admin/category", categoryRouter);
 app.use("/admin/article", articleRouter);
 app.use("/admin/quiz", quizRouter);
+app.use("/admin/question", questionRouter);
+app.use("/admin/answer", answerRouter);
 app.use("/admin/user", userRoute);
 /* End of Admin Route */
 

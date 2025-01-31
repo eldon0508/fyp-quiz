@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import { styled } from "@mui/system";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid2";
 import List from "@mui/material/List";
@@ -13,7 +14,17 @@ import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@mui/material/IconButton";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import LocalPrintshopIcon from "@mui/icons-material/LocalPrintshop";
+import FormLabel from "@mui/material/FormLabel";
+import TextField from "@mui/material/TextField";
 
 const addresses = ["1 MUI Drive", "Reactville", "Anytown", "99999", "USA"];
 const payments = [
@@ -43,8 +54,18 @@ function secondsToTime(seconds) {
   return timeString.trim();
 }
 
+const FormGrid = styled(Grid)(() => ({
+  display: "flex",
+  flexDirection: "column",
+}));
+
 export default function Attempts() {
+  const [expanded, setExpanded] = useState(false);
   const [attempts, setAttempts] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [feedback, setFeedback] = useState("");
+  const [quizId, setQuizId] = useState(-1);
 
   const loadAttempts = async () => {
     const res = await axios.get("/profile-attempts");
@@ -53,41 +74,118 @@ export default function Attempts() {
     }
   };
 
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
+  const handleOpen = (id) => {
+    setIsOpen(true);
+    setQuizId(id);
+  };
+
+  const handleClose = () => setIsOpen(false);
+
+  const handleFeedback = (event) => {
+    setFeedback(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const res = await axios.post("/profile-quiz-feedback", {
+        feedback,
+        quizId,
+      });
+      if (res.data.success) {
+        console.log("Feedback submitted");
+      }
+      handleClose();
+    } catch (err) {
+      console.error(err);
+      handleClose();
+    }
+  };
+
   useEffect(() => {
     loadAttempts();
   }, []);
 
   return (
-    <Stack spacing={2}>
-      {attempts.map((attempt, index) => (
-        <Accordion key={`attempt-${index}`}>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1-content"
-            id="panel1-header"
-          >
-            Attempt {index + 1}
-          </AccordionSummary>
-          <AccordionDetails>
-            <List disablePadding>
-              <ListItem sx={{ py: 1, px: 0 }}>
-                <ListItemText
-                  primary="Question Correct"
-                  secondary={`${attempt.question_number} total`}
+    <>
+      <Dialog
+        fullWidth
+        open={isOpen}
+        onClose={handleClose}
+        aria-labelledby="feedback-dialog-title"
+        aria-describedby="feedback-dialog-description"
+      >
+        <form onSubmit={handleSubmit}>
+          <DialogTitle id="feedback-dialog-title">Quiz Feedback</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="feedback-dialog-description">
+              <FormGrid size={{ xs: 12, md: 6 }}>
+                <FormLabel htmlFor="feedback" required>
+                  Feedback
+                </FormLabel>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  id="feedback"
+                  name="feedback"
+                  required
+                  onChange={handleFeedback}
                 />
-                <Typography variant="body2">
-                  {attempt.question_correct}
-                </Typography>
-              </ListItem>
-              <ListItem sx={{ py: 1, px: 0 }}>
-                <ListItemText primary="Time Used" />
-                <Typography variant="body2">
-                  {secondsToTime(attempt.timeUsed)}
-                </Typography>
-              </ListItem>
-            </List>
-            <Divider />
-            <Stack
+              </FormGrid>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions sx={{ margin: 1 }}>
+            <Stack spacing={2} direction="row">
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button type="submit" variant="contained" color="primary">
+                Submit
+              </Button>
+            </Stack>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Stack>
+        {attempts.map((attempt, index) => (
+          <Accordion
+            key={`attempt-${index}`}
+            expanded={expanded === `panel${index}`}
+            onChange={handleChange(`panel${index}`)}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1-content"
+              id="panel1-header"
+            >
+              Attempt {index + 1}
+            </AccordionSummary>
+            <AccordionDetails>
+              <List disablePadding>
+                <ListItem sx={{ py: 1, px: 0 }}>
+                  <ListItemText primary="Quiz Name" />
+                  <Typography variant="body2">{attempt.quiz.name}</Typography>
+                </ListItem>
+                <ListItem sx={{ py: 1, px: 0 }}>
+                  <ListItemText
+                    primary="Question Correct"
+                    secondary={`${attempt.question_number} total`}
+                  />
+                  <Typography variant="body2">
+                    {attempt.question_correct}
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ py: 1, px: 0 }}>
+                  <ListItemText primary="Time Used" />
+                  <Typography variant="body2">
+                    {secondsToTime(attempt.timeUsed)}
+                  </Typography>
+                </ListItem>
+              </List>
+              <Divider />
+              {/* <Stack
               direction="column"
               divider={<Divider flexItem />}
               spacing={2}
@@ -125,15 +223,24 @@ export default function Attempts() {
                   </Stack>
                 </Grid>
               </div>
-            </Stack>
-          </AccordionDetails>
-          <AccordionActions>
-            <Button>Print</Button>
-          </AccordionActions>
-        </Accordion>
-      ))}
+            </Stack> */}
+            </AccordionDetails>
+            <AccordionActions>
+              <IconButton
+                aria-label="feedback"
+                color="primary"
+                onClick={() => handleOpen(attempt.quiz.id)}
+              >
+                <FeedbackIcon />
+              </IconButton>
+              <IconButton aria-label="print" color="primary">
+                <LocalPrintshopIcon />
+              </IconButton>
+            </AccordionActions>
+          </Accordion>
+        ))}
 
-      {/* <List disablePadding>
+        {/* <List disablePadding>
         <ListItem sx={{ py: 1, px: 0 }}>
           <ListItemText primary="Products" secondary="4 selected" />
           <Typography variant="body2">$134.98</Typography>
@@ -188,6 +295,7 @@ export default function Attempts() {
           </Grid>
         </div>
       </Stack> */}
-    </Stack>
+      </Stack>
+    </>
   );
 }
