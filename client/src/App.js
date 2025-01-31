@@ -16,7 +16,7 @@ function App() {
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/signin" element={<SignInSide />} />
-        <Route path="/quizzes" element={<QuizPage />} />
+        <Route path="/" element={<QuizPage />} />
         <Route path="/take-quiz/:quiz" element={<QuizTaking />} />
       </Routes>
     </BrowserRouter>

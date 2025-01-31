@@ -11,30 +11,35 @@ import TableBody from "@mui/material/TableBody";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import { Grid, TextField, CardActions, CardContent, FormControl } from "@mui/material";
+import { Grid, Stack, TextField, CardActions, CardContent, FormControl, MenuItem } from "@mui/material";
 
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
 import { DashboardContent } from "src/layouts/dashboard";
 import { TableEmptyRows } from "src/utils/table-empty-rows";
 import { TableNoData } from "src/utils/table-no-data";
-import { UserTableHead } from "../user-table-head";
-import { UserTableRow } from "../user-table-row";
+import { AnswerTableHead } from "../answer-table-head";
+import { AnswerTableRow } from "../answer-table-row";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
-import type { UserProps } from "../user-table-row";
+import type { AnswerProps } from "../answer-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
 
 // ----------------------------------------------------------------------
 
-export function UserView() {
+type Question = {
+  id: number;
+  name: string;
+};
+
+export function AnswerView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
-  const [users, setUsers] = useState<UserProps[]>([]);
+  const [answers, setAnswers] = useState<AnswerProps[]>([]);
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: users,
+  const dataFiltered: AnswerProps[] = applyFilter({
+    inputData: answers,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -47,8 +52,8 @@ export function UserView() {
 
   const loadAllDatas = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/admin/user");
-      setUsers(res.data.data);
+      const res = await axios.get("http://localhost:3001/admin/answer");
+      setAnswers(res.data.data);
     } catch (err) {
       console.error(err);
     }
@@ -58,11 +63,11 @@ export function UserView() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Users
+          Answers
         </Typography>
-        <Link to="/admin/user/create">
+        <Link to="/admin/answer/create">
           <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
-            New user
+            New answer
           </Button>
         </Link>
       </Box>
@@ -70,21 +75,21 @@ export function UserView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: "unset" }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <AnswerTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={users.length}
+                rowCount={answers.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    users.map((user) => user.id)
+                    answers.map((data) => data.id)
                   )
                 }
                 headLabel={[
-                  { id: "name", label: "Full Name" },
-                  { id: "dob", label: "Date of Birth" },
+                  { id: "answer_text", label: "Answer" },
+                  { id: "is_correct", label: "Correctness" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
@@ -93,7 +98,7 @@ export function UserView() {
                 {dataFiltered
                   .slice(table.page * table.rowsPerPage, table.page * table.rowsPerPage + table.rowsPerPage)
                   .map((row) => (
-                    <UserTableRow
+                    <AnswerTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
@@ -102,7 +107,7 @@ export function UserView() {
                     />
                   ))}
 
-                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)} />
+                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, answers.length)} />
                 {notFound && <TableNoData searchQuery={filterName} />}
               </TableBody>
             </Table>
@@ -111,7 +116,7 @@ export function UserView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={users.length}
+          count={answers.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[10, 25, 50, 100]}
@@ -190,23 +195,29 @@ export function useTable() {
   };
 }
 
-export function UserCreate() {
+export function AnswerCreate() {
+  const { question_id } = useParams();
   const router = useRouter();
-  const [user, setUser] = useState({ firstname: "", lastname: "", username: "" });
+  const [answer, setAnswer] = useState({
+    answer_text: "",
+    is_correct: -1,
+  });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setAnswer({ ...answer, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/user/store`, user);
-      router.push("/admin/user");
+      await axios.post(`http://localhost:3001/admin/answer/store`, { answer, question_id });
+      router.back();
     } catch (err) {
       console.error(err);
     }
   };
+
+  useEffect(() => {}, []);
 
   const handleCancel = () => router.back();
 
@@ -214,7 +225,7 @@ export function UserCreate() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          User - Create
+          Answer - Create
         </Typography>
       </Box>
       <Card>
@@ -225,35 +236,31 @@ export function UserCreate() {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="firstname"
-                    name="firstname"
-                    label="First Name"
+                    id="answer_text"
+                    name="answer_text"
+                    label="Answer"
                     required
                     onChange={(e) => onInputChange(e)}
                   />
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
-                <FormControl fullWidth>
+                <FormControl fullWidth variant="outlined">
                   <TextField
                     fullWidth
-                    id="lastname"
-                    name="lastname"
-                    label="Last Name"
+                    id="is_correct"
+                    name="is_correct"
+                    label="Correctness"
                     required
                     onChange={(e) => onInputChange(e)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="username"
-                    name="username"
-                    label="Username"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                  />
+                    select
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Correctness ---
+                    </MenuItem>
+                    <MenuItem value={0}>False</MenuItem>
+                    <MenuItem value={1}>True</MenuItem>
+                  </TextField>
                 </FormControl>
               </Grid>
             </Grid>
@@ -278,11 +285,15 @@ export function UserCreate() {
   );
 }
 
-export function UserEdit() {
+export function AnswerEdit() {
   const { id } = useParams();
   const router = useRouter();
-  const [user, setUser] = useState({ firstname: "", lastname: "", username: "", dob: "" });
-  const { firstname, lastname, username, dob } = user;
+  const [answer, setAnswer] = useState({
+    answer_text: "",
+    is_correct: -1,
+  });
+
+  const { answer_text, is_correct } = answer;
 
   useEffect(() => {
     loadData();
@@ -290,22 +301,22 @@ export function UserEdit() {
 
   const loadData = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/admin/user/${id}/edit`);
-      setUser(res.data.data);
+      const res = await axios.get(`http://localhost:3001/admin/answer/${id}/edit`);
+      setAnswer(res.data.data);
     } catch (err) {
       console.error(err);
     }
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setAnswer({ ...answer, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/user/${id}/update`, user);
-      router.push("/admin/user");
+      await axios.put(`http://localhost:3001/admin/answer/${id}/update`, answer);
+      router.back();
     } catch (err) {
       console.error(err);
     }
@@ -317,7 +328,7 @@ export function UserEdit() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          User - Edit
+          Answer - Edit
         </Typography>
       </Box>
       <Card>
@@ -328,51 +339,33 @@ export function UserEdit() {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="firstname"
-                    name="firstname"
-                    label="First Name"
+                    id="answer_text"
+                    name="answer_text"
+                    label="Answer"
                     required
                     onChange={(e) => onInputChange(e)}
-                    value={firstname}
+                    value={answer_text}
                   />
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
-                <FormControl fullWidth>
+                <FormControl fullWidth variant="outlined">
                   <TextField
                     fullWidth
-                    id="lastname"
-                    name="lastname"
-                    label="Last Name"
+                    id="is_correct"
+                    name="is_correct"
+                    label="Correctness"
                     required
                     onChange={(e) => onInputChange(e)}
-                    value={lastname}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="username"
-                    name="username"
-                    label="Username"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    value={username}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="dob"
-                    name="dob"
-                    label="Date of Birth"
-                    type="date"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    value={dob}
-                  />
+                    select
+                    value={is_correct}
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Corretness ---
+                    </MenuItem>
+                    <MenuItem value={0}>False</MenuItem>
+                    <MenuItem value={1}>True</MenuItem>
+                  </TextField>
                 </FormControl>
               </Grid>
             </Grid>

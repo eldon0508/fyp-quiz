@@ -240,7 +240,7 @@ export function ArticleCreate() {
     }
   };
 
-  const handleCancel = () => router.push("/admin/article");
+  const handleCancel = () => router.back();
 
   return (
     <DashboardContent>
@@ -440,7 +440,7 @@ export function ArticleEdit() {
     }
   };
 
-  const handleCancel = () => router.push("/admin/article");
+  const handleCancel = () => router.back();
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
 

@@ -211,7 +211,7 @@ export function QuizCreate() {
     }
   };
 
-  const handleCancel = () => router.push("/admin/quiz");
+  const handleCancel = () => router.back();
 
   return (
     <DashboardContent>
@@ -299,7 +299,7 @@ export function QuizEdit() {
     }
   };
 
-  const handleCancel = () => router.push("/admin/quiz");
+  const handleCancel = () => router.back();
 
   return (
     <DashboardContent>

@@ -10,7 +10,7 @@ module.exports = function (passport) {
         usernameField: "email",
       },
       (username, password, done) => {
-        const query = `SELECT * FROM users WHERE username = ? AND deleted_at IS NULL`;
+        const query = `SELECT * FROM users WHERE username = ? AND active = 1 AND deleted_at IS NULL`;
         db.query(query, [username], function (err, data) {
           if (data.length <= 0) {
             // No account found

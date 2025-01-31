@@ -15,7 +15,7 @@ type QuizTableToolbarProps = {
   onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export function QuizTableToolbar({ numSelected, filterName, onFilterName }: QuizTableToolbarProps) {
+export function AnswerTableToolbar({ numSelected, filterName, onFilterName }: QuizTableToolbarProps) {
   return (
     <Toolbar
       sx={{

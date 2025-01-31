@@ -11,30 +11,37 @@ import TableBody from "@mui/material/TableBody";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import { Grid, TextField, CardActions, CardContent, FormControl } from "@mui/material";
+import { Grid, Stack, TextField, CardActions, CardContent, FormControl, MenuItem } from "@mui/material";
 
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
 import { DashboardContent } from "src/layouts/dashboard";
 import { TableEmptyRows } from "src/utils/table-empty-rows";
 import { TableNoData } from "src/utils/table-no-data";
-import { UserTableHead } from "../user-table-head";
-import { UserTableRow } from "../user-table-row";
+import { QuestionTableHead } from "../question-table-head";
+import { QuestionTableRow } from "../question-table-row";
 import { emptyRows, applyFilter, getComparator } from "../utils";
 
-import type { UserProps } from "../user-table-row";
+import type { QuestionProps } from "../question-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
+import { AnswerTableRow, type AnswerProps } from "../../answer/answer-table-row";
+import { applyFilter as applyAnswerFilter } from "../../answer/utils";
 
 // ----------------------------------------------------------------------
 
-export function UserView() {
+type Quiz = {
+  id: number;
+  name: string;
+};
+
+export function QuestionView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
-  const [users, setUsers] = useState<UserProps[]>([]);
+  const [questions, setQuestions] = useState<QuestionProps[]>([]);
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: users,
+  const dataFiltered: QuestionProps[] = applyFilter({
+    inputData: questions,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -47,8 +54,8 @@ export function UserView() {
 
   const loadAllDatas = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/admin/user");
-      setUsers(res.data.data);
+      const res = await axios.get("http://localhost:3001/admin/question");
+      setQuestions(res.data.data);
     } catch (err) {
       console.error(err);
     }
@@ -58,11 +65,11 @@ export function UserView() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Users
+          Questions
         </Typography>
-        <Link to="/admin/user/create">
+        <Link to="/admin/question/create">
           <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
-            New user
+            New question
           </Button>
         </Link>
       </Box>
@@ -70,21 +77,22 @@ export function UserView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: "unset" }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <QuestionTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={users.length}
+                rowCount={questions.length}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    users.map((user) => user.id)
+                    questions.map((data) => data.id)
                   )
                 }
                 headLabel={[
-                  { id: "name", label: "Full Name" },
-                  { id: "dob", label: "Date of Birth" },
+                  { id: "question_text", label: "Question" },
+                  { id: "quiz_name", label: "Quiz" },
+                  { id: "feedback", label: "Feedback" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
@@ -93,7 +101,7 @@ export function UserView() {
                 {dataFiltered
                   .slice(table.page * table.rowsPerPage, table.page * table.rowsPerPage + table.rowsPerPage)
                   .map((row) => (
-                    <UserTableRow
+                    <QuestionTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
@@ -102,7 +110,7 @@ export function UserView() {
                     />
                   ))}
 
-                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, users.length)} />
+                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, questions.length)} />
                 {notFound && <TableNoData searchQuery={filterName} />}
               </TableBody>
             </Table>
@@ -111,7 +119,7 @@ export function UserView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={users.length}
+          count={questions.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[10, 25, 50, 100]}
@@ -190,19 +198,37 @@ export function useTable() {
   };
 }
 
-export function UserCreate() {
+export function QuestionCreate() {
   const router = useRouter();
-  const [user, setUser] = useState({ firstname: "", lastname: "", username: "" });
+  const [question, setQuestion] = useState({
+    quiz_id: -1,
+    question_text: "",
+    feedback: "",
+  });
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setQuestion({ ...question, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/user/store`, user);
-      router.push("/admin/user");
+      await axios.post(`http://localhost:3001/admin/question/store`, question);
+      router.push("/admin/question");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    loadQuizzes();
+  }, []);
+
+  const loadQuizzes = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3001/admin/question/create`);
+      setQuizzes(res.data.quizzes);
     } catch (err) {
       console.error(err);
     }
@@ -214,7 +240,7 @@ export function UserCreate() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          User - Create
+          Question - Create
         </Typography>
       </Box>
       <Card>
@@ -225,9 +251,9 @@ export function UserCreate() {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="firstname"
-                    name="firstname"
-                    label="First Name"
+                    id="question_text"
+                    name="question_text"
+                    label="Question"
                     required
                     onChange={(e) => onInputChange(e)}
                   />
@@ -235,25 +261,35 @@ export function UserCreate() {
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
+                  <TextField
+                    id="feedback"
+                    name="feedback"
+                    label="Feedback"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
                   <TextField
                     fullWidth
-                    id="lastname"
-                    name="lastname"
-                    label="Last Name"
+                    id="quiz_id"
+                    name="quiz_id"
+                    label="Quiz"
                     required
                     onChange={(e) => onInputChange(e)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="username"
-                    name="username"
-                    label="Username"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                  />
+                    select
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Quiz ---
+                    </MenuItem>
+                    {quizzes.map((quiz: Quiz) => (
+                      <MenuItem value={quiz.id} key={quiz.id}>
+                        {quiz.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </FormControl>
               </Grid>
             </Grid>
@@ -278,11 +314,29 @@ export function UserCreate() {
   );
 }
 
-export function UserEdit() {
+export function QuestionEdit() {
   const { id } = useParams();
   const router = useRouter();
-  const [user, setUser] = useState({ firstname: "", lastname: "", username: "", dob: "" });
-  const { firstname, lastname, username, dob } = user;
+  const [question, setQuestion] = useState({
+    quiz_id: -1,
+    question_text: "",
+    feedback: "",
+  });
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const { quiz_id, question_text, feedback } = question;
+
+  const table = useTable();
+
+  const [filterName, setFilterName] = useState("");
+  const [answers, setAnswers] = useState<AnswerProps[]>([]);
+
+  const dataFiltered: AnswerProps[] = applyAnswerFilter({
+    inputData: answers,
+    comparator: getComparator(table.order, table.orderBy),
+    filterName,
+  });
+
+  const notFound = !dataFiltered.length && !!filterName;
 
   useEffect(() => {
     loadData();
@@ -290,22 +344,24 @@ export function UserEdit() {
 
   const loadData = async () => {
     try {
-      const res = await axios.get(`http://localhost:3001/admin/user/${id}/edit`);
-      setUser(res.data.data);
+      const res = await axios.get(`http://localhost:3001/admin/question/${id}/edit`);
+      setQuestion(res.data.data);
+      setQuizzes(res.data.quizzes);
+      setAnswers(res.data.answers);
     } catch (err) {
       console.error(err);
     }
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    setQuestion({ ...question, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/user/${id}/update`, user);
-      router.push("/admin/user");
+      await axios.put(`http://localhost:3001/admin/question/${id}/update`, question);
+      router.push("/admin/question");
     } catch (err) {
       console.error(err);
     }
@@ -317,7 +373,7 @@ export function UserEdit() {
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          User - Edit
+          Question - Edit
         </Typography>
       </Box>
       <Card>
@@ -328,51 +384,48 @@ export function UserEdit() {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    id="firstname"
-                    name="firstname"
-                    label="First Name"
+                    id="question_text"
+                    name="question_text"
+                    label="Question"
                     required
                     onChange={(e) => onInputChange(e)}
-                    value={firstname}
+                    value={question_text}
                   />
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
+                  <TextField
+                    id="feedback"
+                    name="feedback"
+                    label="Feedback"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    value={feedback}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth variant="outlined">
                   <TextField
                     fullWidth
-                    id="lastname"
-                    name="lastname"
-                    label="Last Name"
+                    id="quiz_id"
+                    name="quiz_id"
+                    label="Quiz"
                     required
                     onChange={(e) => onInputChange(e)}
-                    value={lastname}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="username"
-                    name="username"
-                    label="Username"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    value={username}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="dob"
-                    name="dob"
-                    label="Date of Birth"
-                    type="date"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    value={dob}
-                  />
+                    select
+                    value={quiz_id}
+                  >
+                    <MenuItem value={-1} disabled>
+                      --- Select Quiz ---
+                    </MenuItem>
+                    {quizzes.map((quiz: Quiz) => (
+                      <MenuItem value={quiz.id} key={quiz.id}>
+                        {quiz.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </FormControl>
               </Grid>
             </Grid>
@@ -392,6 +445,69 @@ export function UserEdit() {
             </Grid>
           </CardActions>
         </form>
+      </Card>
+
+      <Box display="flex" alignItems="center" my={5}>
+        <Typography variant="h4" flexGrow={1}>
+          Answers
+        </Typography>
+        <Link to={`/admin/answer/${id}/create`}>
+          <Button variant="contained" color="inherit" startIcon={<Iconify icon="mingcute:add-line" />}>
+            New answer
+          </Button>
+        </Link>
+      </Box>
+      <Card>
+        <Scrollbar>
+          <TableContainer sx={{ overflow: "unset" }}>
+            <Table sx={{ minWidth: 800 }}>
+              <QuestionTableHead
+                order={table.order}
+                orderBy={table.orderBy}
+                rowCount={answers.length}
+                numSelected={table.selected.length}
+                onSort={table.onSort}
+                onSelectAllRows={(checked) =>
+                  table.onSelectAllRows(
+                    checked,
+                    answers.map((data) => data.id)
+                  )
+                }
+                headLabel={[
+                  { id: "answer_text", label: "Answer" },
+                  { id: "is_correct", label: "Is Correct" },
+                  { id: "created_at", label: "Date Created" },
+                  { id: "actions", label: "" },
+                ]}
+              />
+              <TableBody>
+                {dataFiltered
+                  .slice(table.page * table.rowsPerPage, table.page * table.rowsPerPage + table.rowsPerPage)
+                  .map((row) => (
+                    <AnswerTableRow
+                      key={row.id}
+                      row={row}
+                      selected={table.selected.includes(row.id)}
+                      onSelectRow={() => table.onSelectRow(row.id)}
+                      reloadDatas={loadData}
+                    />
+                  ))}
+
+                <TableEmptyRows height={68} emptyRows={emptyRows(table.page, table.rowsPerPage, answers.length)} />
+                {notFound && <TableNoData searchQuery={filterName} />}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Scrollbar>
+        <TablePagination
+          component="div"
+          page={table.page}
+          count={answers.length}
+          rowsPerPage={table.rowsPerPage}
+          onPageChange={table.onChangePage}
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          onRowsPerPageChange={table.onChangeRowsPerPage}
+        />
       </Card>
     </DashboardContent>
   );

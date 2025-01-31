@@ -25,6 +25,14 @@ export const QuizPage = lazy(() => import("src/pages/quiz/quiz"));
 export const QuizCreatePage = lazy(() => import("src/pages/quiz/quizCreate"));
 export const QuizEditPage = lazy(() => import("src/pages/quiz/quizEdit"));
 
+export const QuestionPage = lazy(() => import("src/pages/question/question"));
+export const QuestionCreatePage = lazy(() => import("src/pages/question/questionCreate"));
+export const QuestionEditPage = lazy(() => import("src/pages/question/questionEdit"));
+
+export const AnswerPage = lazy(() => import("src/pages/answer/answer"));
+export const AnswerCreatePage = lazy(() => import("src/pages/answer/answerCreate"));
+export const AnswerEditPage = lazy(() => import("src/pages/answer/answerEdit"));
+
 export const UserPage = lazy(() => import("src/pages/user/user"));
 export const UserCreatePage = lazy(() => import("src/pages/user/userCreate"));
 export const UserEditPage = lazy(() => import("src/pages/user/userEdit"));
@@ -72,6 +80,14 @@ export function Router() {
         { path: "admin/quiz", element: <QuizPage /> },
         { path: "admin/quiz/create", element: <QuizCreatePage /> },
         { path: "admin/quiz/:id/edit", element: <QuizEditPage /> },
+
+        { path: "admin/question", element: <QuestionPage /> },
+        { path: "admin/question/create", element: <QuestionCreatePage /> },
+        { path: "admin/question/:id/edit", element: <QuestionEditPage /> },
+
+        { path: "admin/answer", element: <AnswerPage /> },
+        { path: "admin/answer/:question_id/create", element: <AnswerCreatePage /> },
+        { path: "admin/answer/:id/edit", element: <AnswerEditPage /> },
 
         { path: "admin/user", element: <UserPage /> },
         { path: "admin/user/create", element: <UserCreatePage /> },

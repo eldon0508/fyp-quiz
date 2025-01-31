@@ -39,21 +39,14 @@ export default function SignInCard() {
   const navigate = useNavigate();
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (emailError || passwordError) {
+    if (emailError) {
       return;
     }
 
@@ -61,9 +54,18 @@ export default function SignInCard() {
       const data = new FormData(event.currentTarget);
       const res = await axios.post("/signin", data);
       if (res.data.success) {
-        navigate("/quizzes");
+        navigate("/articles");
+      } else {
+        setEmailError(true);
+        setEmailErrorMessage(
+          "The email and/or the password are incorrect. Please try again."
+        );
       }
     } catch (err) {
+      setEmailError(true);
+      setEmailErrorMessage(
+        "The email and/or the password are incorrect. Please try again."
+      );
       console.error(err);
     }
   };
@@ -81,15 +83,6 @@ export default function SignInCard() {
     } else {
       setEmailError(false);
       setEmailErrorMessage("");
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
     }
 
     return isValid;
@@ -144,8 +137,6 @@ export default function SignInCard() {
             </Link>
           </Box>
           <TextField
-            error={passwordError}
-            helperText={passwordErrorMessage}
             name="password"
             placeholder="••••••"
             type="password"
@@ -154,7 +145,6 @@ export default function SignInCard() {
             required
             fullWidth
             variant="outlined"
-            color={passwordError ? "error" : "primary"}
           />
         </FormControl>
         <FormControlLabel
