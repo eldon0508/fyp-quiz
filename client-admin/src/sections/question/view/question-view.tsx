@@ -90,8 +90,8 @@ export function QuestionView() {
                   )
                 }
                 headLabel={[
+                  { id: "quiz_name", label: "Quiz Name" },
                   { id: "question_text", label: "Question" },
-                  { id: "quiz_name", label: "Quiz" },
                   { id: "feedback", label: "Feedback" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
@@ -247,30 +247,7 @@ export function QuestionCreate() {
         <form onSubmit={(e) => handleSubmit(e)}>
           <CardContent>
             <Grid container spacing={2} padding={3}>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    fullWidth
-                    id="question_text"
-                    name="question_text"
-                    label="Question"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="feedback"
-                    name="feedback"
-                    label="Feedback"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <FormControl fullWidth variant="outlined">
                   <TextField
                     fullWidth
@@ -290,6 +267,33 @@ export function QuestionCreate() {
                       </MenuItem>
                     ))}
                   </TextField>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    fullWidth
+                    id="question_text"
+                    name="question_text"
+                    label="Question"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={6}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="feedback"
+                    name="feedback"
+                    label="Feedback"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={6}
+                  />
                 </FormControl>
               </Grid>
             </Grid>
@@ -371,6 +375,7 @@ export function QuestionEdit() {
 
   return (
     <DashboardContent>
+      {/* Question Card */}
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
           Question - Edit
@@ -380,32 +385,7 @@ export function QuestionEdit() {
         <form onSubmit={(e) => handleSubmit(e)}>
           <CardContent>
             <Grid container spacing={2} padding={3}>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    fullWidth
-                    id="question_text"
-                    name="question_text"
-                    label="Question"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    value={question_text}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="feedback"
-                    name="feedback"
-                    label="Feedback"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    value={feedback}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <FormControl fullWidth variant="outlined">
                   <TextField
                     fullWidth
@@ -428,6 +408,35 @@ export function QuestionEdit() {
                   </TextField>
                 </FormControl>
               </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    fullWidth
+                    id="question_text"
+                    name="question_text"
+                    label="Question"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={6}
+                    value={question_text}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <TextField
+                    id="feedback"
+                    name="feedback"
+                    label="Feedback"
+                    required
+                    onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={6}
+                    value={feedback}
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
           </CardContent>
           <CardActions>
@@ -447,6 +456,7 @@ export function QuestionEdit() {
         </form>
       </Card>
 
+      {/* Answer Card */}
       <Box display="flex" alignItems="center" my={5}>
         <Typography variant="h4" flexGrow={1}>
           Answers
@@ -475,7 +485,7 @@ export function QuestionEdit() {
                 }
                 headLabel={[
                   { id: "answer_text", label: "Answer" },
-                  { id: "is_correct", label: "Is Correct" },
+                  { id: "rate", label: "Vulnerability Rate" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}

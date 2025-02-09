@@ -329,7 +329,8 @@ app.get("/take-quiz/:quiz", (req, res) => {
   db.beginTransaction();
 
   try {
-    const query = `SELECT * FROM quizzes WHERE id = ${req.params.quiz};SELECT GROUP_CONCAT(DISTINCT id) as ids FROM questions WHERE quiz_id = ${req.params.quiz}`;
+    const query = `SELECT * FROM quizzes WHERE id = ${req.params.quiz};
+        SELECT GROUP_CONCAT(DISTINCT id) as ids FROM questions WHERE quiz_id = ${req.params.quiz}`;
 
     db.query(query, (err, data) => {
       if (err) return res.status(500).json({ success: false, error: err });
@@ -345,7 +346,8 @@ app.get("/take-quiz/:quiz", (req, res) => {
         RIGHT JOIN answers a
         ON a.question_id = q.id
         WHERE q.quiz_id = ${quiz.id}
-        AND q.deleted_at IS NULL`;
+        AND q.deleted_at IS NULL
+        ORDER BY RAND()`; // Random the sequence of answers
 
       db.query(q1, (err, data) => {
         if (err) return res.status(500).json({ success: false, error: err });
@@ -363,11 +365,13 @@ app.get("/take-quiz/:quiz", (req, res) => {
           acc[item.question_id].answers.push({
             answer_text: item.answer_text,
             answer_id: item.id,
-            is_correct: item.is_correct,
+            rate: item.rate,
+            best_answer: item.best_answer,
           });
           return acc;
         }, {});
 
+        // Re-index for front-end display question number
         const reindexedData = Object.entries(groupedQuestions).reduce(
           (acc, [key, value], index) => {
             acc[index] = value;
@@ -426,26 +430,27 @@ app.post("/quiz-question-check", (req, res) => {
       WHERE a.question_id = ${req.body.question_id};`;
 
     db.query(query, (err, data) => {
-      const correctAns = data.find((d) => d.is_correct);
+      const bestAnswerOption = data.find((d) => d.best_answer);
+      const selectedAnswerOption = data.find(
+        (d) => d.id === req.body.answer_id
+      );
 
       const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
       const v1 = {
         attempt_id: req.body.attempt_id,
         question_id: req.body.question_id,
         selected_answer: req.body.answer_id,
-        correct_answer: correctAns.id,
-        is_correct: correctAns.id === req.body.answer_id ? true : false,
+        best_answer: bestAnswerOption.id,
         created_at: dt,
         updated_at: dt,
       };
-
       const query1 = `INSERT INTO attempt_questions SET ?`;
       db.query(query1, v1);
       db.commit();
       return res.json({
         success: true,
-        correctness: v1.is_correct,
-        feedback: correctAns.feedback,
+        rate: selectedAnswerOption.rate,
+        feedback: bestAnswerOption.feedback,
       });
     });
   } catch (err) {
@@ -467,11 +472,11 @@ app.post("/quiz-submit", (req, res) => {
 
     db.query(query, (err, data) => {
       const num = data.length;
-      const corr = data.filter((d) => d.is_correct).length;
+      const vRate = req.body.vulRate;
       const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
       const q2 = {
-        question_correct: corr,
         question_number: num,
+        vulnerability_rate: vRate,
         completed: true,
         updated_at: dt,
       };
@@ -480,7 +485,7 @@ app.post("/quiz-submit", (req, res) => {
 
       db.query(q1, q2);
       db.commit();
-      return res.json({ success: true, data: data });
+      return res.json({ success: true, data: data, vulRate: vRate });
     });
   } catch (err) {
     db.rollback();

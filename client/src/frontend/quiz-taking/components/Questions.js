@@ -159,12 +159,17 @@ export default function Questions() {
   const [optionDisabled, setOptionDisabled] = useState(false);
   const [showSubmit, setShowsubmit] = useState(false);
   const [start, setStart] = useState(false);
-  const [feedback, setFeedback] = useState({});
+  const [feedback, setFeedback] = useState();
   const [attemptId, setAttemptId] = useState(null);
-  const [questions, setQuestions] = useState();
+  const [questions, setQuestions] = useState({});
   const [questionsLength, setQuesionLength] = useState(-1);
   const [quiz, setQuiz] = useState({});
   const [selectedAnswerId, setSelectedAnswerId] = useState(-1);
+  const [vulRate, setVulRate] = useState(0);
+
+  useEffect(() => {
+    loadQuiz();
+  }, []);
 
   const loadQuiz = async () => {
     const res = await axios.get(window.location.pathname);
@@ -175,10 +180,6 @@ export default function Questions() {
     }
   };
 
-  useEffect(() => {
-    loadQuiz();
-  }, []);
-
   const handleStart = async () => {
     const res = await axios.post("/start-quiz", { quiz_id: quiz.id });
     if (res.data.success) {
@@ -187,7 +188,7 @@ export default function Questions() {
     }
   };
 
-  const handleCheck = async (question_id) => {
+  const handleCheck = async (question_id, rate) => {
     try {
       setCheckDisabled(true);
       setNextDisabled(false);
@@ -200,10 +201,8 @@ export default function Questions() {
         attempt_id: attemptId,
       });
       if (res.data.success) {
-        setFeedback({
-          correct: res.data.correctness,
-          feedback: res.data.feedback,
-        });
+        setFeedback(res.data.feedback);
+        setVulRate((prev) => prev + res.data.rate);
       }
     } catch (err) {
       console.error(err);
@@ -211,12 +210,13 @@ export default function Questions() {
   };
 
   const handleNext = () => {
+    console.log("Vulnerability rate:", vulRate);
     setCurrentQuestionIndex(currentQuestionIndex + 1);
     setShowFeedback(false);
     setCheckDisabled(true);
     setNextDisabled(true);
     setOptionDisabled(false);
-    setFeedback({});
+    setFeedback();
 
     if (currentQuestionIndex + 2 >= questionsLength) {
       setShowsubmit(true);
@@ -232,9 +232,10 @@ export default function Questions() {
     try {
       const res = await axios.post("/quiz-submit", {
         attempt_id: attemptId,
+        vulRate,
       });
       if (res.data.success) {
-        navigate("/quizzes");
+        console.log(`Test result is: ${res.data.vRate}%.`);
       }
     } catch (err) {
       console.error(err);
@@ -316,12 +317,8 @@ export default function Questions() {
             {showFeedback ? (
               <>
                 <Divider sx={{ marginY: "2rem" }} />
-                <Box
-                  sx={{
-                    bgcolor: feedback.correct ? "success.main" : "error.main",
-                  }}
-                >
-                  <Typography>{feedback.feedback}</Typography>
+                <Box>
+                  <Typography>{feedback}</Typography>
                 </Box>
               </>
             ) : (

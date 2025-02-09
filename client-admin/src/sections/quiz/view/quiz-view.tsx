@@ -85,6 +85,7 @@ export function QuizView() {
                 headLabel={[
                   { id: "name", label: "Name" },
                   { id: "description", label: "Description" },
+                  { id: "question_count", label: "Questions Count" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
@@ -237,6 +238,8 @@ export function QuizCreate() {
                     label="Description"
                     required
                     onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={3}
                   />
                 </FormControl>
               </Grid>
@@ -320,8 +323,8 @@ export function QuizEdit() {
                     name="name"
                     label="Name"
                     required
-                    value={name}
                     onChange={(e) => onInputChange(e)}
+                    value={name}
                   />
                 </FormControl>
                 <FormControl fullWidth>
@@ -330,8 +333,10 @@ export function QuizEdit() {
                     name="description"
                     label="Description"
                     required
-                    value={description}
                     onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={3}
+                    value={description}
                   />
                 </FormControl>
               </Stack>

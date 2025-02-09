@@ -19,8 +19,9 @@ const store = (req, res) => {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
       question_id: req.body.question_id,
-      answer_text: req.body.answer.answer_text,
-      is_correct: req.body.answer.is_correct,
+      answer_text: req.body.answer_text,
+      rate: req.body.rate,
+      best_answer: req.body.best_answer,
       created_at: dt,
       updated_at: dt,
     };
@@ -53,7 +54,8 @@ const update = (req, res) => {
     const q2 = {
       question_id: req.body.question_id,
       answer_text: req.body.answer_text,
-      is_correct: req.body.is_correct,
+      rate: req.body.rate,
+      best_answer: req.body.best_answer,
       updated_at: dt,
     };
     const query = `UPDATE answers SET ? WHERE id = "${req.params.id}"`;

@@ -16,11 +16,10 @@ import { Iconify } from "src/components/iconify";
 export type QuestionProps = {
   id: string;
   quiz_id: number;
+  quiz_name: string;
   question_text: string;
   feedback: string;
-  percentage: number;
   created_at: string;
-  quiz_name: string;
 };
 
 type QuestionTableRowProps = {
@@ -53,11 +52,13 @@ export function QuestionTableRow({ row, selected, onSelectRow, reloadDatas }: Qu
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell>{row.question_text}</TableCell>
         <Link to={`/admin/quiz/${row.quiz_id}/edit`}>
           <TableCell>{row.quiz_name}</TableCell>
         </Link>
-        <TableCell>{row.feedback}</TableCell>
+        <TableCell sx={{ maxWidth: 450 }}>{row.question_text}</TableCell>
+        <TableCell sx={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: 400 }}>
+          {row.feedback}
+        </TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
