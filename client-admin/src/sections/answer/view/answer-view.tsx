@@ -5,13 +5,16 @@ import { Link, useParams } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
+import Checkbox from "@mui/material/Checkbox";
 import Table from "@mui/material/Table";
 import Button from "@mui/material/Button";
 import TableBody from "@mui/material/TableBody";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import { Grid, Stack, TextField, CardActions, CardContent, FormControl, MenuItem } from "@mui/material";
+import { Grid, TextField, CardActions, CardContent, FormControl } from "@mui/material";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 import { Iconify } from "src/components/iconify";
 import { Scrollbar } from "src/components/scrollbar";
@@ -26,11 +29,6 @@ import type { AnswerProps } from "../answer-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
 
 // ----------------------------------------------------------------------
-
-type Question = {
-  id: number;
-  name: string;
-};
 
 export function AnswerView() {
   const table = useTable();
@@ -89,7 +87,7 @@ export function AnswerView() {
                 }
                 headLabel={[
                   { id: "answer_text", label: "Answer" },
-                  { id: "is_correct", label: "Correctness" },
+                  { id: "rate", label: "Vulnerability Rate" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
@@ -198,9 +196,12 @@ export function useTable() {
 export function AnswerCreate() {
   const { question_id } = useParams();
   const router = useRouter();
+  const [checked, setChecked] = useState(false);
   const [answer, setAnswer] = useState({
+    question_id,
     answer_text: "",
-    is_correct: -1,
+    rate: 0,
+    best_answer: 0,
   });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -210,14 +211,18 @@ export function AnswerCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/answer/store`, { answer, question_id });
+      // await axios.post(`http://localhost:3001/admin/answer/store`, { answer, question_id });
+      await axios.post(`http://localhost:3001/admin/answer/store`, answer);
       router.back();
     } catch (err) {
       console.error(err);
     }
   };
 
-  useEffect(() => {}, []);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+    setAnswer({ ...answer, best_answer: event.target.checked === true ? 1 : 0 });
+  };
 
   const handleCancel = () => router.back();
 
@@ -241,27 +246,39 @@ export function AnswerCreate() {
                     label="Answer"
                     required
                     onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={2}
                   />
                 </FormControl>
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth variant="outlined">
                   <TextField
+                    type="number"
                     fullWidth
-                    id="is_correct"
-                    name="is_correct"
-                    label="Correctness"
+                    id="rate"
+                    name="rate"
+                    label="Rate"
                     required
                     onChange={(e) => onInputChange(e)}
-                    select
-                  >
-                    <MenuItem value={-1} disabled>
-                      --- Select Correctness ---
-                    </MenuItem>
-                    <MenuItem value={0}>False</MenuItem>
-                    <MenuItem value={1}>True</MenuItem>
-                  </TextField>
+                    helperText="Please enter a rate between 0-100 inclusive."
+                  />
                 </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={checked}
+                        id="best_answer"
+                        name="best_answer"
+                        onChange={(e) => handleChange(e)}
+                      />
+                    }
+                    label="Best Answer?"
+                  />
+                </FormGroup>
               </Grid>
             </Grid>
           </CardContent>
@@ -288,12 +305,14 @@ export function AnswerCreate() {
 export function AnswerEdit() {
   const { id } = useParams();
   const router = useRouter();
+  const [checked, setChecked] = useState(false);
   const [answer, setAnswer] = useState({
     answer_text: "",
-    is_correct: -1,
+    rate: 0,
+    best_answer: 0,
   });
 
-  const { answer_text, is_correct } = answer;
+  const { answer_text, rate } = answer;
 
   useEffect(() => {
     loadData();
@@ -303,6 +322,7 @@ export function AnswerEdit() {
     try {
       const res = await axios.get(`http://localhost:3001/admin/answer/${id}/edit`);
       setAnswer(res.data.data);
+      setChecked(res.data.data.best_answer === 1 ? true : false);
     } catch (err) {
       console.error(err);
     }
@@ -320,6 +340,11 @@ export function AnswerEdit() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+    setAnswer({ ...answer, best_answer: event.target.checked === true ? 1 : 0 });
   };
 
   const handleCancel = () => router.back();
@@ -344,6 +369,8 @@ export function AnswerEdit() {
                     label="Answer"
                     required
                     onChange={(e) => onInputChange(e)}
+                    multiline
+                    rows={2}
                     value={answer_text}
                   />
                 </FormControl>
@@ -351,22 +378,32 @@ export function AnswerEdit() {
               <Grid item xs={6}>
                 <FormControl fullWidth variant="outlined">
                   <TextField
+                    type="number"
                     fullWidth
-                    id="is_correct"
-                    name="is_correct"
-                    label="Correctness"
+                    id="rate"
+                    name="rate"
+                    label="Rate"
                     required
                     onChange={(e) => onInputChange(e)}
-                    select
-                    value={is_correct}
-                  >
-                    <MenuItem value={-1} disabled>
-                      --- Select Corretness ---
-                    </MenuItem>
-                    <MenuItem value={0}>False</MenuItem>
-                    <MenuItem value={1}>True</MenuItem>
-                  </TextField>
+                    helperText="Please enter a rate between 0-100 inclusive."
+                    value={rate}
+                  />
                 </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={checked}
+                        id="best_answer"
+                        name="best_answer"
+                        onChange={(e) => handleChange(e)}
+                      />
+                    }
+                    label="Best Answer?"
+                  />
+                </FormGroup>
               </Grid>
             </Grid>
           </CardContent>

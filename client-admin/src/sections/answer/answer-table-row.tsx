@@ -9,7 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 
-import { Iconify } from "src/components/iconify";
+import { Iconify } from "../../components/iconify";
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +17,8 @@ export type AnswerProps = {
   id: string;
   question_id: number;
   answer_text: string;
-  is_correct: boolean;
+  rate: number;
+  best_answer: boolean;
   created_at: string;
   question_name: string;
 };
@@ -53,7 +54,7 @@ export function AnswerTableRow({ row, selected, onSelectRow, reloadDatas }: Answ
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
         <TableCell>{row.answer_text}</TableCell>
-        <TableCell>{row.is_correct}</TableCell>
+        <TableCell>{row.rate}%</TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
