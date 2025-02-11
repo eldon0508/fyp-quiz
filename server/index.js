@@ -92,7 +92,7 @@ app.post("/signout", (req, res) => {
       return next(err);
     }
     console.log("user logout success");
-    res.redirect("/articles");
+    res.redirect("/");
   });
 });
 
@@ -450,7 +450,8 @@ app.post("/quiz-question-check", (req, res) => {
       return res.json({
         success: true,
         rate: selectedAnswerOption.rate,
-        feedback: bestAnswerOption.feedback,
+        bestAnswer: bestAnswerOption,
+        correctness: req.body.answer_id === bestAnswerOption.id,
       });
     });
   } catch (err) {
@@ -472,7 +473,7 @@ app.post("/quiz-submit", (req, res) => {
 
     db.query(query, (err, data) => {
       const num = data.length;
-      const vRate = req.body.vulRate;
+      const vRate = req.body.vulRate / num;
       const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
       const q2 = {
         question_number: num,

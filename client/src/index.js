@@ -4,12 +4,14 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./frontend/theme";
+import ScrollToTopButton from "./frontend/shared-theme/ScrollToTopButton";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <App />
+      <ScrollToTopButton />
     </ThemeProvider>
   </React.StrictMode>
 );

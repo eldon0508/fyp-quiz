@@ -58,7 +58,7 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
       </IconButton>
       <Menu
         anchorEl={anchorEl}
-        id="account-menu"
+        id="mode-menu"
         open={open}
         onClose={handleClose}
         onClick={handleClose}
