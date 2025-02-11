@@ -16,6 +16,7 @@ export default function Article(props) {
         maxWidth="lg"
         component="main"
         sx={{ display: "flex", flexDirection: "column", my: 16, gap: 4 }}
+        id="scaleble-content"
       >
         <MainContent />
         <Latest />

@@ -69,7 +69,7 @@ export default function AppAppBar() {
           >
             <SitemarkIcon />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Link to="/quizzes">
+              <Link to="/">
                 <Button variant="text" color="info" size="small">
                   Quiz
                 </Button>

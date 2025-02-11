@@ -166,6 +166,7 @@ export default function Questions() {
   const [quiz, setQuiz] = useState({});
   const [selectedAnswerId, setSelectedAnswerId] = useState(-1);
   const [vulRate, setVulRate] = useState(0);
+  const [correct, setCorrect] = useState(null);
 
   useEffect(() => {
     loadQuiz();
@@ -188,11 +189,10 @@ export default function Questions() {
     }
   };
 
-  const handleCheck = async (question_id, rate) => {
+  const handleCheck = async (question_id) => {
     try {
       setCheckDisabled(true);
       setNextDisabled(false);
-      setShowFeedback(true);
       setOptionDisabled(true);
 
       const res = await axios.post("/quiz-question-check", {
@@ -201,8 +201,10 @@ export default function Questions() {
         attempt_id: attemptId,
       });
       if (res.data.success) {
-        setFeedback(res.data.feedback);
+        setFeedback(res.data.bestAnswer.feedback);
         setVulRate((prev) => prev + res.data.rate);
+        setShowFeedback(true);
+        setCorrect(res.data.correctness);
       }
     } catch (err) {
       console.error(err);
@@ -217,6 +219,7 @@ export default function Questions() {
     setNextDisabled(true);
     setOptionDisabled(false);
     setFeedback();
+    setCorrect(null);
 
     if (currentQuestionIndex + 2 >= questionsLength) {
       setShowsubmit(true);
@@ -235,7 +238,7 @@ export default function Questions() {
         vulRate,
       });
       if (res.data.success) {
-        console.log(`Test result is: ${res.data.vRate}%.`);
+        console.log(`Test result is: ${res.data.vulRate}%.`);
       }
     } catch (err) {
       console.error(err);
@@ -243,94 +246,97 @@ export default function Questions() {
   };
 
   return (
-    <Container id="features" sx={{ py: { xs: 8, sm: 16 } }}>
-      <Box sx={{ width: { sm: "100%", md: "60%" } }}>
-        <Typography
-          component="h2"
-          variant="h4"
-          gutterBottom
-          sx={{ color: "text.primary" }}
-        >
+    <Container id="quiz-container" sx={{ py: { xs: 8, sm: 16 } }}>
+      <Box marginBottom={2}>
+        <Typography variant="h3" gutterBottom sx={{ color: "text.primary" }}>
           {quiz.name}
         </Typography>
-        <Typography
-          variant="body1"
-          sx={{ color: "text.secondary", mb: { xs: 2, sm: 4 } }}
-        >
+        <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
           {quiz.description}
         </Typography>
       </Box>
-      <div>
-        {start ? (
-          <>
-            <Typography variant="body1" gutterBottom>
-              [{currentQuestionIndex + 1}]{". "}
-              {questions[currentQuestionIndex].question_text}
-            </Typography>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-              value={selectedAnswerId}
-              onChange={handleAnswerChange}
+      {start ? (
+        <Stack spacing={1} border={"solid 1px"} borderRadius={1} padding="1rem">
+          <Typography variant="subtitle1" gutterBottom>
+            [{currentQuestionIndex + 1}]{". "}
+            {questions[currentQuestionIndex].question_text}
+          </Typography>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            name="radio-buttons-group"
+            value={selectedAnswerId}
+            onChange={handleAnswerChange}
+          >
+            {questions[currentQuestionIndex].answers.map((answer, index) => (
+              <FormControlLabel
+                key={index}
+                value={answer.answer_id}
+                control={<Radio />}
+                label={answer.answer_text}
+                disabled={optionDisabled}
+              />
+            ))}
+          </RadioGroup>
+          <Stack spacing={2} direction="row">
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() =>
+                handleCheck(questions[currentQuestionIndex].question_id)
+              }
+              disabled={checkDisabled}
             >
-              {questions[currentQuestionIndex].answers.map((answer, index) => (
-                <FormControlLabel
-                  key={index}
-                  value={answer.answer_id}
-                  control={<Radio />}
-                  label={answer.answer_text}
-                  disabled={optionDisabled}
-                />
-              ))}
-            </RadioGroup>
-            <Stack spacing={2} direction="row">
+              Check
+            </Button>
+            {showSubmit ? (
               <Button
                 variant="contained"
-                color="secondary"
-                onClick={() =>
-                  handleCheck(questions[currentQuestionIndex].question_id)
-                }
-                disabled={checkDisabled}
+                color="primary"
+                onClick={handleSubmit}
+                disabled={nextDisabled}
               >
-                Check
+                Submit
               </Button>
-              {showSubmit ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSubmit}
-                  disabled={nextDisabled}
-                >
-                  Submit
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  disabled={nextDisabled}
-                >
-                  Next
-                </Button>
-              )}
-            </Stack>
-            {showFeedback ? (
-              <>
-                <Divider sx={{ marginY: "2rem" }} />
-                <Box>
-                  <Typography>{feedback}</Typography>
-                </Box>
-              </>
             ) : (
-              <></>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleNext}
+                disabled={nextDisabled}
+              >
+                Next
+              </Button>
             )}
-          </>
-        ) : (
+          </Stack>
+          {showFeedback ? (
+            <Stack spacing={2}>
+              <Divider sx={{ paddingY: "1rem" }} />
+              <Box>
+                {correct ? (
+                  <Typography variant="h2" color="success">
+                    Correct !
+                  </Typography>
+                ) : (
+                  <Typography variant="h2" color="error">
+                    Opps!
+                  </Typography>
+                )}
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={"100"}>
+                  {feedback}
+                </Typography>
+              </Box>
+            </Stack>
+          ) : null}
+        </Stack>
+      ) : (
+        <>
           <Button variant="contained" color="primary" onClick={handleStart}>
             Start Quiz
           </Button>
-        )}
-      </div>
+        </>
+      )}
     </Container>
   );
 }

@@ -54,7 +54,7 @@ export default function SignInCard() {
       const data = new FormData(event.currentTarget);
       const res = await axios.post("/signin", data);
       if (res.data.success) {
-        navigate("/articles");
+        navigate("/");
       } else {
         setEmailError(true);
         setEmailErrorMessage(

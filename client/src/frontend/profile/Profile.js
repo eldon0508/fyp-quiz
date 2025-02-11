@@ -63,7 +63,7 @@ export default function Profile(props) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <AppAppBar />
-      <div>
+      <div id="scaleble-content">
         <Container sx={{ py: { xs: 8, sm: 16 } }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <Tabs
