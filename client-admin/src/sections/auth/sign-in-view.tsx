@@ -13,11 +13,13 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { useRouter } from "src/routes/hooks";
 
 import { Iconify } from "src/components/iconify";
+import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
   const router = useRouter();
+  const { setAlert } = useAlert();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -38,8 +40,12 @@ export function SignInView() {
       const res = await axios.post(`http://localhost:3001/admin/signin`, { email, password });
       if (res.data.success) {
         router.push("/admin/dashboard");
+        setAlert({ title: "Success", type: "success", context: "Welcome back!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

@@ -24,6 +24,7 @@ import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { UserProps } from "../user-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
+import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -192,6 +193,7 @@ export function useTable() {
 
 export function UserCreate() {
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [user, setUser] = useState({ firstname: "", lastname: "", username: "" });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -201,9 +203,15 @@ export function UserCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/user/store`, user);
-      router.push("/admin/user");
+      const result = await axios.post(`http://localhost:3001/admin/user/store`, user);
+      if (result.data.success) {
+        router.push("/admin/user");
+        setAlert({ title: "Success", type: "success", context: "User created successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -281,6 +289,7 @@ export function UserCreate() {
 export function UserEdit() {
   const { id } = useParams();
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [user, setUser] = useState({ firstname: "", lastname: "", username: "", dob: "" });
   const { firstname, lastname, username, dob } = user;
 
@@ -304,9 +313,15 @@ export function UserEdit() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/user/${id}/update`, user);
-      router.push("/admin/user");
+      const result = await axios.put(`http://localhost:3001/admin/user/${id}/update`, user);
+      if (result.data.success) {
+        router.push("/admin/user");
+        setAlert({ title: "Success", type: "success", context: "User updated successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

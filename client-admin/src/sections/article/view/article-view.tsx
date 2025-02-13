@@ -29,6 +29,7 @@ import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { ArticleProps } from "../article-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
+import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -202,6 +203,7 @@ export function useTable() {
 
 export function ArticleCreate() {
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [article, setArticle] = useState({
     category_id: -1,
     title: "",
@@ -220,9 +222,15 @@ export function ArticleCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/article/store`, article);
-      router.push("/admin/article");
+      const result = await axios.post(`http://localhost:3001/admin/article/store`, article);
+      if (result.data.success) {
+        router.push("/admin/article");
+        setAlert({ title: "Success", type: "success", context: "Article created successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -371,6 +379,7 @@ export function ArticleCreate() {
 export function ArticleEdit() {
   const router = useRouter();
   const { id } = useParams();
+  const { setAlert } = useAlert();
   const [article, setArticle] = useState({
     category_id: -1,
     title: "",
@@ -423,9 +432,15 @@ export function ArticleEdit() {
       const formData = {
         image: image ?? null,
       };
-      await axios.post(`http://localhost:3001/admin/article/${id}/upload`, formData, config);
-      router.push("/admin/article");
+      const result = await axios.post(`http://localhost:3001/admin/article/${id}/upload`, formData, config);
+      if (result.data.success) {
+        router.push("/admin/article");
+        setAlert({ title: "Success", type: "success", context: "Article image uploaded successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -433,9 +448,15 @@ export function ArticleEdit() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/article/${id}/update`, article);
-      router.push("/admin/article");
+      const result = await axios.put(`http://localhost:3001/admin/article/${id}/update`, article);
+      if (result.data.success) {
+        router.push("/admin/article");
+        setAlert({ title: "Success", type: "success", context: "Article updated successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

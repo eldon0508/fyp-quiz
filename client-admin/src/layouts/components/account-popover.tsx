@@ -15,6 +15,7 @@ import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 import { useRouter, usePathname } from "src/routes/hooks";
 
 import { _myAccount } from "src/_mock";
+import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -127,9 +128,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         <Divider sx={{ borderStyle: "dashed" }} />
 
         <Box sx={{ p: 1 }}>
-          <Button fullWidth color="error" size="medium" variant="text">
-            Logout
-          </Button>
+          <form method="post" action="http://localhost:3001/admin/signout">
+            <Button fullWidth color="error" size="medium" variant="text" type="submit">
+              Logout
+            </Button>
+          </form>
         </Box>
       </Popover>
     </>

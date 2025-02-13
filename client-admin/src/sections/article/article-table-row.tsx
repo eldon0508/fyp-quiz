@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 
 import { Iconify } from "src/components/iconify";
+import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ type ArticleTableRowProps = {
 
 export function ArticleTableRow({ row, selected, onSelectRow, reloadDatas }: ArticleTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const { setAlert } = useAlert();
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -45,9 +47,15 @@ export function ArticleTableRow({ row, selected, onSelectRow, reloadDatas }: Art
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/admin/article/${id}/destroy`);
-      reloadDatas();
+      const result = await axios.delete(`http://localhost:3001/admin/article/${id}/destroy`);
+      if (result.data.success) {
+        reloadDatas();
+        setAlert({ title: "Success", type: "success", context: "Article deleted successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

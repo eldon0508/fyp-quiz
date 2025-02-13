@@ -27,6 +27,7 @@ import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { AnswerProps } from "../answer-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
+import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -195,6 +196,7 @@ export function useTable() {
 
 export function AnswerCreate() {
   const { question_id } = useParams();
+  const { setAlert } = useAlert();
   const router = useRouter();
   const [checked, setChecked] = useState(false);
   const [answer, setAnswer] = useState({
@@ -211,10 +213,15 @@ export function AnswerCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // await axios.post(`http://localhost:3001/admin/answer/store`, { answer, question_id });
-      await axios.post(`http://localhost:3001/admin/answer/store`, answer);
-      router.back();
+      const result = await axios.post(`http://localhost:3001/admin/answer/store`, answer);
+      if (result.data.success) {
+        router.back();
+        setAlert({ title: "Success", type: "success", context: "Answer created successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -304,6 +311,7 @@ export function AnswerCreate() {
 
 export function AnswerEdit() {
   const { id } = useParams();
+  const { setAlert } = useAlert();
   const router = useRouter();
   const [checked, setChecked] = useState(false);
   const [answer, setAnswer] = useState({
@@ -335,9 +343,15 @@ export function AnswerEdit() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/answer/${id}/update`, answer);
-      router.back();
+      const result = await axios.put(`http://localhost:3001/admin/answer/${id}/update`, answer);
+      if (result.data.success) {
+        router.back();
+        setAlert({ title: "Success", type: "success", context: "Answer updated successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
