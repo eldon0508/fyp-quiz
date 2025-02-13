@@ -515,13 +515,12 @@ app.post("/admin/signin", (req, res, next) => {
   })(req, res, next);
 });
 
-app.get("/admin/signout", (req, res) => {
+app.post("/admin/signout", (req, res) => {
   req.logout(function (err) {
     if (err) {
       return next(err);
     }
-    console.log("admin logout success");
-    res.redirect("/admin/signin");
+    res.redirect("http://localhost:3039/admin/signin");
   });
 });
 

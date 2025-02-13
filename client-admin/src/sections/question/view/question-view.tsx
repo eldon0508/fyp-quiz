@@ -364,8 +364,10 @@ export function QuestionEdit() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/question/${id}/update`, question);
-      router.push("/admin/question");
+      const result = await axios.put(`http://localhost:3001/admin/question/${id}/update`, question);
+      if (result.data.success) {
+        router.push("/admin/question");
+      }
     } catch (err) {
       console.error(err);
     }

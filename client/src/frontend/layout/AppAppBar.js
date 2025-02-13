@@ -34,7 +34,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
-  const [authUser, setAuthUser] = React.useState(null);
+  const [authUser, setAuthUser] = React.useState(false);
 
   React.useEffect(() => {
     getAuthUser();

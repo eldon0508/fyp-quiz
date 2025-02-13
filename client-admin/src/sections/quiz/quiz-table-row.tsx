@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 
 import { Iconify } from "src/components/iconify";
+import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,7 @@ type QuizTableRowProps = {
 
 export function QuizTableRow({ row, selected, onSelectRow, reloadDatas }: QuizTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const { setAlert } = useAlert();
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -41,9 +43,15 @@ export function QuizTableRow({ row, selected, onSelectRow, reloadDatas }: QuizTa
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/admin/quiz/${id}/destroy`);
-      reloadDatas();
+      const result = await axios.delete(`http://localhost:3001/admin/quiz/${id}/destroy`);
+      if (result.data.success) {
+        reloadDatas();
+        setAlert({ title: "Success", type: "success", context: "Quiz deleted successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

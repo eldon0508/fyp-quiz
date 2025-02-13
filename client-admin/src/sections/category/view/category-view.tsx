@@ -24,6 +24,7 @@ import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { CategoryProps } from "../category-table-row";
 import { useRouter } from "../../../routes/hooks";
+import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -192,6 +193,7 @@ export function useTable() {
 
 export function CategoryCreate() {
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [category, setCategory] = useState({ name: "", description: "" });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -201,9 +203,15 @@ export function CategoryCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/category/store`, category);
-      router.push("/admin/category");
+      const result = await axios.post(`http://localhost:3001/admin/category/store`, category);
+      if (result.data.success) {
+        router.push("/admin/category");
+        setAlert({ title: "Success", type: "success", context: "Category created successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -262,6 +270,7 @@ export function CategoryCreate() {
 export function CategoryEdit() {
   const { id } = useParams();
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [category, setCategory] = useState({ name: "", description: "" });
   const { name, description } = category;
 
@@ -285,9 +294,15 @@ export function CategoryEdit() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/category/${id}/update`, category);
-      router.push("/admin/category");
+      const result = await axios.put(`http://localhost:3001/admin/category/${id}/update`, category);
+      if (result.data.success) {
+        router.push("/admin/category");
+        setAlert({ title: "Success", type: "success", context: "Category updated successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

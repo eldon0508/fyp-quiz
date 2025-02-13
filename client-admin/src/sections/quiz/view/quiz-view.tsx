@@ -24,6 +24,7 @@ import { emptyRows, applyFilter, getComparator } from "../utils";
 
 import type { QuizProps } from "../quiz-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
+import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -193,6 +194,7 @@ export function useTable() {
 
 export function QuizCreate() {
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [quiz, setQuiz] = useState({
     name: "",
     description: "",
@@ -205,9 +207,15 @@ export function QuizCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/quiz/store`, quiz);
-      router.push("/admin/quiz");
+      const result = await axios.post(`http://localhost:3001/admin/quiz/store`, quiz);
+      if (result.data.success) {
+        router.push("/admin/quiz");
+        setAlert({ title: "Success", type: "success", context: "Quiz created successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -268,6 +276,7 @@ export function QuizCreate() {
 export function QuizEdit() {
   const { id } = useParams();
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [quiz, setQuiz] = useState({
     name: "",
     description: "",
@@ -295,9 +304,15 @@ export function QuizEdit() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/admin/quiz/${id}/update`, quiz);
-      router.push("/admin/quiz");
+      const result = await axios.put(`http://localhost:3001/admin/quiz/${id}/update`, quiz);
+      if (result.data.success) {
+        router.push("/admin/quiz");
+        setAlert({ title: "Success", type: "success", context: "Quiz updated successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

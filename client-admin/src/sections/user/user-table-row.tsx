@@ -14,6 +14,7 @@ import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 
 import { Label } from "src/components/label";
 import { Iconify } from "src/components/iconify";
+import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ type UserTableRowProps = {
 
 export function UserTableRow({ row, selected, onSelectRow, reloadDatas }: UserTableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
+  const { setAlert } = useAlert();
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     setOpenPopover(event.currentTarget);
@@ -45,9 +47,15 @@ export function UserTableRow({ row, selected, onSelectRow, reloadDatas }: UserTa
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/admin/user/${id}/destroy`);
-      reloadDatas();
+      const result = await axios.delete(`http://localhost:3001/admin/user/${id}/destroy`);
+      if (result.data.success) {
+        reloadDatas();
+        setAlert({ title: "Success", type: "success", context: "User deleted successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

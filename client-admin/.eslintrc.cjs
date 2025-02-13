@@ -37,6 +37,7 @@ module.exports = {
     "no-promise-executor-return": 0,
     "no-unneeded-ternary": 0,
     "import/prefer-default-export": 0,
+    "arrow-body-style": ["error", "as-needed"],
     "prefer-destructuring": [1, { object: true, array: false }],
     // typescript
     "@typescript-eslint/naming-convention": 0,
@@ -54,6 +55,8 @@ module.exports = {
     "react/jsx-no-duplicate-props": [1, { ignoreCase: false }],
     "react/jsx-no-useless-fragment": [1, { allowExpressions: true }],
     "react/no-unstable-nested-components": [1, { allowAsProps: true }],
+    "react/jsx-boolean-value": 0,
+    "react/jsx-no-constructed-context-values": 0,
     // jsx-a11y
     "jsx-a11y/anchor-is-valid": 0,
     "jsx-a11y/control-has-associated-label": 0,
