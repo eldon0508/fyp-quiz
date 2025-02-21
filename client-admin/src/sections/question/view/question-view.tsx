@@ -26,6 +26,7 @@ import type { QuestionProps } from "../question-table-row";
 import { useRouter } from "../../../routes/hooks/use-router";
 import { AnswerTableRow, type AnswerProps } from "../../answer/answer-table-row";
 import { applyFilter as applyAnswerFilter } from "../../answer/utils";
+import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
@@ -200,6 +201,7 @@ export function useTable() {
 
 export function QuestionCreate() {
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [question, setQuestion] = useState({
     quiz_id: -1,
     question_text: "",
@@ -214,9 +216,15 @@ export function QuestionCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:3001/admin/question/store`, question);
-      router.push("/admin/question");
+      const res = await axios.post(`http://localhost:3001/admin/question/store`, question);
+      if (res.data.success) {
+        router.push("/admin/question");
+        setAlert({ title: "Success", type: "success", context: "Question created successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+      }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };
@@ -321,6 +329,7 @@ export function QuestionCreate() {
 export function QuestionEdit() {
   const { id } = useParams();
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [question, setQuestion] = useState({
     quiz_id: -1,
     question_text: "",
@@ -367,8 +376,12 @@ export function QuestionEdit() {
       const result = await axios.put(`http://localhost:3001/admin/question/${id}/update`, question);
       if (result.data.success) {
         router.push("/admin/question");
+        setAlert({ title: "Success", type: "success", context: "Question updated successfully!" });
+      } else {
+        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       }
     } catch (err) {
+      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
     }
   };

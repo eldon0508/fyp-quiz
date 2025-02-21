@@ -315,6 +315,7 @@ export function ArticleCreate() {
                     label="Authors"
                     required
                     onChange={(e) => onInputChange(e)}
+                    helperText="No whitespaces needed. E.g. John,James,Kate"
                   />
                 </FormControl>
               </Grid>
@@ -351,6 +352,7 @@ export function ArticleCreate() {
                     required
                     onChange={(e) => onInputChange(e)}
                     multiline
+                    rows={10}
                   />
                 </FormControl>
               </Grid>
@@ -552,6 +554,7 @@ export function ArticleEdit() {
                     label="authors"
                     required
                     onChange={(e) => onInputChange(e)}
+                    helperText="No whitespaces needed. E.g. John,James,Kate"
                     value={authors}
                   />
                 </FormControl>
@@ -599,6 +602,7 @@ export function ArticleEdit() {
                     onChange={(e) => onInputChange(e)}
                     multiline
                     value={content}
+                    rows={10}
                   />
                 </FormControl>
               </Grid>

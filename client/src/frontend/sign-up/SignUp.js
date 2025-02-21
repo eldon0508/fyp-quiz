@@ -115,8 +115,10 @@ export default function SignUp(props) {
       const data = new FormData(event.currentTarget);
       const res = await axios.post("/signup", data);
       if (res.data.success) {
-        await axios.post("/signin", data);
-        navigate("/quizzes");
+        const signInRes = await axios.post("/signin", data);
+        if (signInRes.data.success) {
+          navigate("/");
+        }
       } else {
         // navigate("/signup");
         // duplicate username

@@ -114,7 +114,7 @@ const StyledTypography = styled(Typography)({
 });
 
 function Author({ authors, date }) {
-  const auth = authors.split(",");
+  const authorsArray = authors.split(",");
   const created_at = new Date(date).toDateString();
 
   return (
@@ -137,7 +137,7 @@ function Author({ authors, date }) {
         }}
       >
         <AvatarGroup max={3}>
-          {auth.map((author, index) => (
+          {authorsArray.map((author, index) => (
             <Avatar
               key={index}
               alt={author}
@@ -146,7 +146,7 @@ function Author({ authors, date }) {
             />
           ))}
         </AvatarGroup>
-        <Typography variant="caption">{auth.join(", ")}</Typography>
+        <Typography variant="caption">{authorsArray.join(", ")}</Typography>
       </Box>
       <Typography variant="caption">{created_at.slice(4)}</Typography>
     </Box>
