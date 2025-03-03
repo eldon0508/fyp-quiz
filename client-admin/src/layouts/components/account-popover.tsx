@@ -15,7 +15,6 @@ import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 import { useRouter, usePathname } from "src/routes/hooks";
 
 import { _myAccount } from "src/_mock";
-import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 

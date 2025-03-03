@@ -1,9 +1,7 @@
 const db = require("../database");
 
 const index = (req, res) => {
-  const query = `SELECT *, (SELECT COUNT(*) FROM questions q WHERE q.quiz_id = qu.id) AS question_count
-          FROM quizzes qu
-          WHERE qu.deleted_at IS NULL`;
+  const query = `SELECT * FROM quizzes WHERE deleted_at IS NULL`;
   db.query(query, (err, data) => {
     if (err) return res.json(err);
     return res.json({ data: data });

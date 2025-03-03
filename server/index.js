@@ -1,24 +1,19 @@
 const express = require("express");
+const app = express();
 const db = require("./database");
 const cors = require("cors");
-const path = require("path"),
-  flash = require("connect-flash"),
-  expressSession = require("express-session"),
-  cookieParser = require("cookie-parser"),
-  logger = require("morgan"),
-  fileUpload = require("express-fileupload");
+const path = require("path");
+const flash = require("connect-flash");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const logger = require("morgan");
+const fileUpload = require("express-fileupload");
 
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 
 const PORT = process.env.PORT || 3001;
 const saltRounds = 10;
-
-const app = express();
-
-app.use(
-  expressSession({ secret: "secret", saveUninitialized: false, resave: false })
-);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -30,9 +25,25 @@ app.use(flash());
 app.use(fileUpload());
 
 app.use(cookieParser("secret"));
+app.use(
+  session({
+    secret: "fyp-quiz-secret",
+    saveUninitialized: false,
+    resave: false,
+  })
+);
+
 app.use(passport.initialize());
-app.use(passport.authenticate("session"));
+app.use(passport.session());
 require("./passportConfig")(passport);
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  res.status(401).json({ success: false });
+}
 
 /* Quizzer Router */
 app.post("/signup", async (req, res) => {
@@ -69,43 +80,46 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/signin", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
+  passport.authenticate("quizzer-local", (err, user) => {
     if (err) {
       console.error(err);
+      return res.status(500).json({ success: false });
     }
+
     if (user) {
       req.login(user, (err) => {
-        if (err) {
-          console.error(err);
-        }
+        if (err) console.error(err);
         return res.json({ success: true });
       });
     } else {
-      return res.json({ success: false });
+      return res.status(401).json({ success: false });
     }
   })(req, res, next);
 });
 
 app.post("/signout", (req, res) => {
   req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    console.log("user logout success");
+    if (err) return next(err);
+
+    console.log("user logout success", req.user);
     res.redirect("/");
   });
 });
 
 app.get("/getAuthUser", (req, res) => {
   try {
-    res.json({ data: req.user, success: true });
+    if (req.user) {
+      return res.json({ data: req.user, success: true });
+    }
+    return res.json({ success: false });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, error: err });
+    return res.status(500).json({ success: false, error: err });
   }
 });
 
-app.get("/profile", (req, res) => {
+app.get("/profile", ensureAuthenticated, (req, res) => {
+  console.log("Profile route handler reached"); // Add this log
   try {
     const q = `SELECT * FROM users WHERE id = ${req.user.id}`;
     db.query(q, (err, data) => {
@@ -123,8 +137,8 @@ app.put("/profile-update", (req, res) => {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
       firstname: req.body.formData.firstname,
-      lastname: req.body.formData.lastname,
-      dob: req.body.formData.dob,
+      lastname: req.body.formData.lastname ?? null,
+      dob: req.body.formData.dob ?? null,
       updated_at: dt,
     };
     const query = `UPDATE users SET ? WHERE id = ${req.user.id}`;
@@ -159,8 +173,7 @@ app.put("/password-update", (req, res) => {
   }
 });
 
-//!!!!! user_id
-app.get("/profile-attempts", (req, res) => {
+app.get("/profile-attempts", ensureAuthenticated, (req, res) => {
   try {
     // const q = `SELECT *, a.created_at AS a_created_at, a.updated_at AS a_updated_at
     //     FROM attempt_questions aq
@@ -174,7 +187,7 @@ app.get("/profile-attempts", (req, res) => {
     const q = `SELECT * FROM quizzes q
           RIGHT JOIN attempts a
           ON q.id = a.quiz_id
-          WHERE a.user_id = 2
+          WHERE a.user_id = ${req.user.id}
           AND a.deleted_at IS NULL`;
 
     db.query(q, (err, data) => {
@@ -185,15 +198,16 @@ app.get("/profile-attempts", (req, res) => {
         if (!acc[attempt_id]) {
           acc[attempt_id] = {
             id: item.id,
-            question_correct: item.question_correct,
             question_number: item.question_number,
-            completed: item.completed ? "Completed" : "Uncompleted",
+            question_correct: item.question_correct,
+            rate: item.vulnerability_rate,
+            completed: item.completed ? "Completed" : "Unfinished",
+            created_at: item.created_at,
             timeUsed: (item.updated_at - item.created_at) / 1000,
             quiz: {
               id: item.quiz_id,
               name: item.name,
               description: item.description,
-              level: item.level,
             },
           };
         }
@@ -325,91 +339,24 @@ app.get("/articles/:id", (req, res) => {
   }
 });
 
-app.get("/take-quiz/:quiz", (req, res) => {
-  db.beginTransaction();
-
-  try {
-    const query = `SELECT * FROM quizzes WHERE id = ${req.params.quiz};
-        SELECT GROUP_CONCAT(DISTINCT id) as ids FROM questions WHERE quiz_id = ${req.params.quiz}`;
-
-    db.query(query, (err, data) => {
-      if (err) return res.status(500).json({ success: false, error: err });
-      // const question_ids = data[1][0].ids;
-      // const q1 = `SELECT q.*, a.* FROM questions q
-      //   RIGHT JOIN answers a
-      //   ON a.question_id = q.id
-      //   WHERE q.deleted_at IS NULL
-      //   AND a.question_id IN (${question_ids})`;
-
-      const quiz = data[0][0];
-      const q1 = `SELECT q.*, a.* FROM questions q
-        RIGHT JOIN answers a
-        ON a.question_id = q.id
-        WHERE q.quiz_id = ${quiz.id}
-        AND q.deleted_at IS NULL
-        ORDER BY RAND()`; // Random the sequence of answers
-
-      db.query(q1, (err, data) => {
-        if (err) return res.status(500).json({ success: false, error: err });
-
-        const groupedQuestions = data.reduce((acc, item) => {
-          const questionText = item.question_text;
-
-          if (!acc[item.question_id]) {
-            acc[item.question_id] = {
-              question_text: questionText,
-              question_id: item.question_id,
-              answers: [],
-            };
-          }
-          acc[item.question_id].answers.push({
-            answer_text: item.answer_text,
-            answer_id: item.id,
-            rate: item.rate,
-            best_answer: item.best_answer,
-          });
-          return acc;
-        }, {});
-
-        // Re-index for front-end display question number
-        const reindexedData = Object.entries(groupedQuestions).reduce(
-          (acc, [key, value], index) => {
-            acc[index] = value;
-            return acc;
-          },
-          {}
-        );
-
-        return res.json({
-          success: true,
-          questions: reindexedData,
-          quiz: quiz,
-        });
-      });
-    });
-  } catch (err) {
-    db.rollback();
-    console.error(err);
-    return res.status(500).json({ success: false, error: err });
-  }
-});
-
-app.post("/start-quiz", (req, res) => {
+app.post("/take-quiz", (req, res) => {
   db.beginTransaction();
 
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const user_id = req.user.id;
+    const questionNum = req.body.quesNum;
     const quiz_id = req.body.quiz_id;
-    const q1 = {
-      user_id: user_id,
+    const data1 = {
+      user_id: req.user.id,
       quiz_id: quiz_id,
+      question_number: questionNum,
       created_at: dt,
       updated_at: dt,
     };
 
-    const query = `INSERT INTO attempts SET ?; UPDATE users SET last_attempt = "${dt}" WHERE id = ${req.user.id}`;
-    db.query(query, q1, (err, data) => {
+    // Create attempt and update user lastest attempt time
+    const attemptQuery = `INSERT INTO attempts SET ?; UPDATE users SET last_attempt = "${dt}" WHERE id = ${req.user.id};`;
+    db.query(attemptQuery, data1, (err, data) => {
       db.commit();
       return res.json({ success: true, attempt_id: data[0].insertId });
     });
@@ -420,6 +367,63 @@ app.post("/start-quiz", (req, res) => {
   }
 });
 
+app.get("/quiz-taking/:attempt_id", ensureAuthenticated, (req, res) => {
+  try {
+    const attemptQuery = `SELECT * FROM attempts WHERE id = ${req.params.attempt_id} AND deleted_at IS NULL`;
+
+    db.query(attemptQuery, (err, attemptData) => {
+      const att = attemptData[0];
+
+      // Retrieve questions and quiz information
+      const questionsQuery = `SELECT id FROM questions WHERE deleted_at IS NULL ORDER BY RAND() LIMIT ${att.question_number}`;
+      db.query(questionsQuery, (err, qq) => {
+        const q_ids = qq.map((q) => q.id);
+        const qaQuery = `SELECT * FROM questions q LEFT JOIN answers a ON a.question_id = q.id WHERE a.question_id IN (${q_ids});
+          SELECT * FROM quizzes WHERE id = ${att.quiz_id} AND deleted_at IS NULL;`;
+        db.query(qaQuery, (err, data) => {
+          const qas = data[0];
+          const groupedQuestions = qas.reduce((acc, item) => {
+            if (!acc[item.question_id]) {
+              acc[item.question_id] = {
+                question_text: item.question_text,
+                question_id: item.question_id,
+                answers: [],
+              };
+            }
+            acc[item.question_id].answers.push({
+              answer_text: item.answer_text,
+              answer_id: item.id,
+              rate: item.rate,
+              best_answer: item.best_answer,
+            });
+            return acc;
+          }, {});
+
+          // Re-index to start from 1 for front-end to display question number
+          const reindexedData = Object.entries(groupedQuestions).reduce(
+            (acc, [key, value], index) => {
+              acc[index] = value;
+              return acc;
+            },
+            {}
+          );
+
+          return res.json({
+            success: true,
+            questions: reindexedData,
+            quiz: data[1][0],
+            attempt_id: att.id,
+          });
+        });
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, error: err });
+  }
+});
+
+// Check question answer and add into attempt_question
 app.post("/quiz-question-check", (req, res) => {
   db.beginTransaction();
 
@@ -461,32 +465,32 @@ app.post("/quiz-question-check", (req, res) => {
   }
 });
 
+// Submission of attempt
 app.post("/quiz-submit", (req, res) => {
   db.beginTransaction();
 
   try {
-    const query = `SELECT * FROM attempts a
-      LEFT JOIN attempt_questions aq
-      ON aq.attempt_id = a.id
-      WHERE a.id = ${req.body.attempt_id}
-      AND a.deleted_at IS NULL`;
+    const attQuery = `SELECT * FROM attempts WHERE id = ${req.body.attempt_id} AND deleted_at IS NULL`;
 
-    db.query(query, (err, data) => {
-      const num = data.length;
-      const vRate = req.body.vulRate / num;
+    db.query(attQuery, (err, atts) => {
+      const att = atts[0];
+
+      const upQuery = `UPDATE attempts SET ? WHERE id = ${att.id}`;
       const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-      const q2 = {
-        question_number: num,
-        vulnerability_rate: vRate,
+      const d1 = {
+        question_correct: req.body.questionCorrect,
+        vulnerability_rate: req.body.vulRate / att.question_number,
         completed: true,
         updated_at: dt,
       };
 
-      const q1 = `UPDATE attempts SET ? WHERE id = ${req.body.attempt_id}`;
-
-      db.query(q1, q2);
+      db.query(upQuery, d1);
       db.commit();
-      return res.json({ success: true, data: data, vulRate: vRate });
+      return res.json({
+        success: true,
+        data: att,
+        vulRate: d1.vulnerability_rate,
+      });
     });
   } catch (err) {
     db.rollback();
@@ -498,28 +502,27 @@ app.post("/quiz-submit", (req, res) => {
 
 /* Admin Route */
 app.post("/admin/signin", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
+  passport.authenticate("admin-local", (err, user) => {
     if (err) {
       console.error(err);
+      return res.status(500).json({ success: false });
     }
+
     if (user) {
       req.login(user, (err) => {
-        if (err) {
-          console.error(err);
-        }
-        res.json({ success: true });
+        if (err) console.error(err);
+        return res.json({ success: true });
       });
     } else {
-      res.json({ success: false });
+      return res.status(401).json({ success: false });
     }
   })(req, res, next);
 });
 
 app.post("/admin/signout", (req, res) => {
   req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
+    if (err) return next(err);
+
     res.redirect("http://localhost:3039/admin/signin");
   });
 });

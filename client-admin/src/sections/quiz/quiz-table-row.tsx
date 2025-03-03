@@ -63,7 +63,6 @@ export function QuizTableRow({ row, selected, onSelectRow, reloadDatas }: QuizTa
         <TableCell sx={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: 400 }}>
           {row.description}
         </TableCell>
-        <TableCell>{row.question_count}</TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>

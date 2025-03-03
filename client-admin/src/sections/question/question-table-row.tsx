@@ -60,9 +60,6 @@ export function QuestionTableRow({ row, selected, onSelectRow, reloadDatas }: Qu
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <Link to={`/admin/quiz/${row.quiz_id}/edit`}>
-          <TableCell>{row.quiz_name}</TableCell>
-        </Link>
         <TableCell sx={{ maxWidth: 450 }}>{row.question_text}</TableCell>
         <TableCell sx={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: 400 }}>
           {row.feedback}

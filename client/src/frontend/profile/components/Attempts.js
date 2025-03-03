@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { styled } from "@mui/system";
@@ -60,6 +61,7 @@ const FormGrid = styled(Grid)(() => ({
 }));
 
 export default function Attempts() {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const [attempts, setAttempts] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -68,9 +70,15 @@ export default function Attempts() {
   const [quizId, setQuizId] = useState(-1);
 
   const loadAttempts = async () => {
-    const res = await axios.get("/profile-attempts");
-    if (res.data.success) {
-      setAttempts(res.data.data);
+    try {
+      const res = await axios.get("/profile");
+      if (res.data.success) {
+        setAttempts(res.data.data);
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        navigate("/signin");
+      }
     }
   };
 
@@ -98,6 +106,7 @@ export default function Attempts() {
       });
       if (res.data.success) {
         console.log("Feedback submitted");
+        alert("Your feedback has been submitted. Thank you for your help.");
       }
       handleClose();
     } catch (err) {
@@ -160,70 +169,110 @@ export default function Attempts() {
               aria-controls="panel1-content"
               id="panel1-header"
             >
-              Attempt {index + 1}
+              Attempt #{index + 1}
             </AccordionSummary>
             <AccordionDetails>
-              <List disablePadding>
-                <ListItem sx={{ py: 1, px: 0 }}>
-                  <ListItemText primary="Quiz Name" />
-                  <Typography variant="body2">{attempt.quiz.name}</Typography>
-                </ListItem>
+              <Typography variant="h5" gutterBottom>
+                Summary
+              </Typography>
+              <List>
                 <ListItem sx={{ py: 1, px: 0 }}>
                   <ListItemText
                     primary="Question Correct"
                     secondary={`${attempt.question_number} total`}
                   />
-                  <Typography variant="body2">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                     {attempt.question_correct}
                   </Typography>
                 </ListItem>
                 <ListItem sx={{ py: 1, px: 0 }}>
+                  <ListItemText primary="Vulnerability Rate" />
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                    {attempt.rate}%
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ py: 1, px: 0 }}>
                   <ListItemText primary="Time Used" />
-                  <Typography variant="body2">
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                     {secondsToTime(attempt.timeUsed)}
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ py: 1, px: 0 }}>
+                  <ListItemText primary="Status" />
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                    {attempt.completed}
                   </Typography>
                 </ListItem>
               </List>
               <Divider />
-              {/* <Stack
-              direction="column"
-              divider={<Divider flexItem />}
-              spacing={2}
-              sx={{ my: 2 }}
-            >
-              <div>
-                <Typography variant="subtitle2" gutterBottom>
-                  Shipment details
-                </Typography>
-                <Typography gutterBottom>John Smith</Typography>
-                <Typography gutterBottom sx={{ color: "text.secondary" }}>
-                  {addresses.join(", ")}
-                </Typography>
-              </div>
-              <div>
-                <Typography variant="subtitle2" gutterBottom>
-                  Payment details
-                </Typography>
-                <Grid container>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    useFlexGap
-                    sx={{ width: "100%", mb: 1 }}
+              <Stack
+                direction="column"
+                divider={<Divider flexItem />}
+                spacing={2}
+                sx={{ my: 2 }}
+              >
+                <div>
+                  <Typography variant="h5" gutterBottom>
+                    Quiz details
+                  </Typography>
+                  <Typography variant="h6" gutterBottom>
+                    {attempt.quiz.name}
+                  </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ color: "text.secondary" }}
                   >
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "text.secondary" }}
+                    {attempt.quiz.description}
+                  </Typography>
+                </div>
+                <div>
+                  <Grid container>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      useFlexGap
+                      sx={{ width: "100%", mb: 1 }}
                     >
-                      Date Taken
-                    </Typography>
-                    <Typography variant="body2">
-                      {attempt.created_at.split("T")[0]}
-                    </Typography>
-                  </Stack>
-                </Grid>
-              </div>
-            </Stack> */}
+                      <Typography
+                        variant="body1"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Date:
+                      </Typography>
+                      <Typography variant="body2">
+                        {attempt.created_at.split("T")[0]}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid container>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      useFlexGap
+                      sx={{ width: "100%", mb: 1 }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{ color: "text.secondary" }}
+                      >
+                        Time:
+                      </Typography>
+                      <Typography variant="body2">
+                        {new Date(attempt.created_at).toLocaleTimeString(
+                          "en-GB",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                            timeZone: "UTC",
+                          }
+                        )}
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                </div>
+              </Stack>
             </AccordionDetails>
             <AccordionActions>
               <IconButton
@@ -241,60 +290,63 @@ export default function Attempts() {
         ))}
 
         {/* <List disablePadding>
-        <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Products" secondary="4 selected" />
-          <Typography variant="body2">$134.98</Typography>
-        </ListItem>
-        <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Shipping" secondary="Plus taxes" />
-          <Typography variant="body2">$9.99</Typography>
-        </ListItem>
-        <ListItem sx={{ py: 1, px: 0 }}>
-          <ListItemText primary="Total" />
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            $144.97
-          </Typography>
-        </ListItem>
-      </List>
-      <Divider />
-      <Stack
-        direction="column"
-        divider={<Divider flexItem />}
-        spacing={2}
-        sx={{ my: 2 }}
-      >
-        <div>
-          <Typography variant="subtitle2" gutterBottom>
-            Shipment details
-          </Typography>
-          <Typography gutterBottom>John Smith</Typography>
-          <Typography gutterBottom sx={{ color: "text.secondary" }}>
-            {addresses.join(", ")}
-          </Typography>
-        </div>
-        <div>
-          <Typography variant="subtitle2" gutterBottom>
-            Payment details
-          </Typography>
-          <Grid container>
-            {payments.map((payment) => (
-              <React.Fragment key={payment.name}>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  useFlexGap
-                  sx={{ width: "100%", mb: 1 }}
-                >
-                  <Typography variant="body1" sx={{ color: "text.secondary" }}>
-                    {payment.name}
-                  </Typography>
-                  <Typography variant="body2">{payment.detail}</Typography>
-                </Stack>
-              </React.Fragment>
-            ))}
-          </Grid>
-        </div>
-      </Stack> */}
+          <ListItem sx={{ py: 1, px: 0 }}>
+            <ListItemText primary="Products" secondary="4 selected" />
+            <Typography variant="body2">$134.98</Typography>
+          </ListItem>
+          <ListItem sx={{ py: 1, px: 0 }}>
+            <ListItemText primary="Shipping" secondary="Plus taxes" />
+            <Typography variant="body2">$9.99</Typography>
+          </ListItem>
+          <ListItem sx={{ py: 1, px: 0 }}>
+            <ListItemText primary="Total" />
+            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+              $144.97
+            </Typography>
+          </ListItem>
+        </List>
+        <Divider />
+        <Stack
+          direction="column"
+          divider={<Divider flexItem />}
+          spacing={2}
+          sx={{ my: 2 }}
+        >
+          <div>
+            <Typography variant="subtitle2" gutterBottom>
+              Shipment details
+            </Typography>
+            <Typography gutterBottom>John Smith</Typography>
+            <Typography gutterBottom sx={{ color: "text.secondary" }}>
+              {addresses.join(", ")}
+            </Typography>
+          </div>
+          <div>
+            <Typography variant="subtitle2" gutterBottom>
+              Payment details
+            </Typography>
+            <Grid container>
+              {payments.map((payment) => (
+                <React.Fragment key={payment.name}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    useFlexGap
+                    sx={{ width: "100%", mb: 1 }}
+                  >
+                    <Typography
+                      variant="body1"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      {payment.name}
+                    </Typography>
+                    <Typography variant="body2">{payment.detail}</Typography>
+                  </Stack>
+                </React.Fragment>
+              ))}
+            </Grid>
+          </div>
+        </Stack> */}
       </Stack>
     </>
   );

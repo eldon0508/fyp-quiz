@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import PropTypes from "prop-types";
@@ -7,7 +8,6 @@ import AppTheme from "../shared-theme/AppTheme";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
-import Grid from "@mui/material/Grid2";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import DetailsForm from "./components/DetailsForm";
@@ -37,6 +37,7 @@ CustomTabPanel.propTypes = {
 };
 
 export default function Profile(props) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
     firstname: "",
     lastname: "",
@@ -53,9 +54,15 @@ export default function Profile(props) {
   }, []);
 
   const loadProfile = async () => {
-    const res = await axios.get("/profile");
-    if (res.data.success) {
-      setProfile(res.data.profile);
+    try {
+      const res = await axios.get("/profile");
+      if (res.data.success) {
+        setProfile(res.data.profile);
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        navigate("/signin");
+      }
     }
   };
 

@@ -86,7 +86,6 @@ export function QuizView() {
                 headLabel={[
                   { id: "name", label: "Name" },
                   { id: "description", label: "Description" },
-                  { id: "question_count", label: "Questions Count" },
                   { id: "created_at", label: "Date Created" },
                   { id: "actions", label: "" },
                 ]}
