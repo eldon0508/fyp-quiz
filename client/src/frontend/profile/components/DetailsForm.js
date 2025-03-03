@@ -42,7 +42,6 @@ export default function DetailsForm({ profile }) {
     try {
       const res = await axios.put("/profile-update", { formData });
       if (res.data.success) {
-        console.log("success udpate");
         navigate(0);
       }
     } catch (err) {
@@ -56,7 +55,7 @@ export default function DetailsForm({ profile }) {
       const res = await axios.delete("/profile-delete");
       if (res.data.success) {
         await axios.post("/signout");
-        navigate("/articles");
+        navigate("/");
       }
     } catch (err) {
       console.error(err);
@@ -100,7 +99,6 @@ export default function DetailsForm({ profile }) {
           </Stack>
         </DialogActions>
       </Dialog>
-      {/* <form onSubmit={handleSubmit}> */}
       <Grid container spacing={3} sx={{ marginBottom: 2 }}>
         <FormGrid size={{ xs: 12, md: 6 }}>
           <FormLabel htmlFor="firstname" required>
@@ -122,7 +120,7 @@ export default function DetailsForm({ profile }) {
             name="lastname"
             size="small"
             onChange={handleChange}
-            defaultValue={profile.lastname ?? ""}
+            defaultValue={profile.lastname ?? null}
           />
         </FormGrid>
         <FormGrid size={{ xs: 12, md: 6 }}>
@@ -133,34 +131,30 @@ export default function DetailsForm({ profile }) {
             id="dob"
             name="dob"
             type="date"
-            required
             size="small"
             onChange={handleChange}
-            defaultValue={profile.dob ?? ""}
+            defaultValue={profile.dob ?? null}
           />
         </FormGrid>
         <FormGrid size={{ xs: 12, md: 6 }}></FormGrid>
       </Grid>
       <Grid
         container
+        paddingTop="1rem"
         spacing={3}
         direction="row"
         sx={{
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        <Stack spacing={2} direction="row">
-          <Button variant="contained" color="secondary" onClick={handleOpen}>
-            Delete My Account
-          </Button>
-          <Button variant="contained" onClick={handleSubmit}>
-            Submit
-          </Button>
-        </Stack>
+        <Button variant="contained" color="error" onClick={handleOpen}>
+          Delete My Account
+        </Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          Submit
+        </Button>
       </Grid>
-
-      {/* </form> */}
     </>
   );
 }

@@ -1,7 +1,6 @@
 import type { Theme, SxProps, Breakpoint } from "@mui/material/styles";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 
 import Box from "@mui/material/Box";
 import Alert from "@mui/material/Alert";
@@ -101,6 +100,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                       icon: <Iconify width={22} icon="solar:settings-bold-duotone" />,
                     },
                   ]}
+                  // admin={authUser.username}
                 />
               </Box>
             ),

@@ -91,7 +91,6 @@ export function QuestionView() {
                   )
                 }
                 headLabel={[
-                  { id: "quiz_name", label: "Quiz Name" },
                   { id: "question_text", label: "Question" },
                   { id: "feedback", label: "Feedback" },
                   { id: "created_at", label: "Date Created" },
@@ -203,11 +202,9 @@ export function QuestionCreate() {
   const router = useRouter();
   const { setAlert } = useAlert();
   const [question, setQuestion] = useState({
-    quiz_id: -1,
     question_text: "",
     feedback: "",
   });
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setQuestion({ ...question, [e.target.name]: e.target.value });
@@ -229,19 +226,6 @@ export function QuestionCreate() {
     }
   };
 
-  useEffect(() => {
-    loadQuizzes();
-  }, []);
-
-  const loadQuizzes = async () => {
-    try {
-      const res = await axios.get(`http://localhost:3001/admin/question/create`);
-      setQuizzes(res.data.quizzes);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleCancel = () => router.back();
 
   return (
@@ -255,28 +239,6 @@ export function QuestionCreate() {
         <form onSubmit={(e) => handleSubmit(e)}>
           <CardContent>
             <Grid container spacing={2} padding={3}>
-              <Grid item xs={12}>
-                <FormControl fullWidth variant="outlined">
-                  <TextField
-                    fullWidth
-                    id="quiz_id"
-                    name="quiz_id"
-                    label="Quiz"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    select
-                  >
-                    <MenuItem value={-1} disabled>
-                      --- Select Quiz ---
-                    </MenuItem>
-                    {quizzes.map((quiz: Quiz) => (
-                      <MenuItem value={quiz.id} key={quiz.id}>
-                        {quiz.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-              </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
                   <TextField
@@ -331,12 +293,10 @@ export function QuestionEdit() {
   const router = useRouter();
   const { setAlert } = useAlert();
   const [question, setQuestion] = useState({
-    quiz_id: -1,
     question_text: "",
     feedback: "",
   });
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const { quiz_id, question_text, feedback } = question;
+  const { question_text, feedback } = question;
 
   const table = useTable();
 
@@ -359,7 +319,6 @@ export function QuestionEdit() {
     try {
       const res = await axios.get(`http://localhost:3001/admin/question/${id}/edit`);
       setQuestion(res.data.data);
-      setQuizzes(res.data.quizzes);
       setAnswers(res.data.answers);
     } catch (err) {
       console.error(err);
@@ -400,29 +359,6 @@ export function QuestionEdit() {
         <form onSubmit={(e) => handleSubmit(e)}>
           <CardContent>
             <Grid container spacing={2} padding={3}>
-              <Grid item xs={12}>
-                <FormControl fullWidth variant="outlined">
-                  <TextField
-                    fullWidth
-                    id="quiz_id"
-                    name="quiz_id"
-                    label="Quiz"
-                    required
-                    onChange={(e) => onInputChange(e)}
-                    select
-                    value={quiz_id}
-                  >
-                    <MenuItem value={-1} disabled>
-                      --- Select Quiz ---
-                    </MenuItem>
-                    {quizzes.map((quiz: Quiz) => (
-                      <MenuItem value={quiz.id} key={quiz.id}>
-                        {quiz.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-              </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
                   <TextField

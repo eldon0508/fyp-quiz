@@ -42,7 +42,11 @@ export function SignInView() {
         router.push("/admin/dashboard");
         setAlert({ title: "Success", type: "success", context: "Welcome back!" });
       } else {
-        setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
+        setAlert({
+          title: "Opps",
+          type: "error",
+          context: "The email and/or the password are incorrect. Please try again.",
+        });
       }
     } catch (err) {
       setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });

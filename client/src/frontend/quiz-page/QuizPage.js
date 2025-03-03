@@ -3,34 +3,32 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import AppAppBar from "../layout/AppAppBar";
 import Hero from "./components/Hero";
-import LogoCollection from "./components/LogoCollection";
-import Highlights from "./components/Highlights";
-import Pricing from "./components/Pricing";
-import Features from "./components/Features";
-import Testimonials from "./components/Testimonials";
-import FAQ from "./components/FAQ";
 import Footer from "../layout/Footer";
 import AppTheme from "../shared-theme/AppTheme";
+import Container from "@mui/material/Container";
+import MainContent from "../article/components/MainContent";
+import Latest from "../article/components/Latest";
 
 export default function QuizPage(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <AppAppBar />
-      <Hero />
-      <div>
-        <LogoCollection />
-        <Features />
-        <Divider />
-        <Testimonials />
-        <Divider />
-        <Highlights />
-        <Divider />
-        <Pricing />
-        <Divider />
-        <FAQ />
-        <Divider />
-        <Footer />
+      <div id="scaleble-content">
+        <Hero />
+        <div>
+          <Divider />
+          <Container
+            maxWidth="lg"
+            component="main"
+            sx={{ display: "flex", flexDirection: "column", my: 16, gap: 4 }}
+            id="scaleble-content"
+          >
+            <MainContent />
+            <Latest />
+          </Container>
+          <Footer />
+        </div>
       </div>
     </AppTheme>
   );

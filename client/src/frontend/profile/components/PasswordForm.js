@@ -48,7 +48,7 @@ export default function PasswordForm() {
           password: formData.password,
         });
         if (res.data.success) {
-          navigate("/quizzes");
+          navigate("/");
         }
       } catch (err) {
         console.error(err);

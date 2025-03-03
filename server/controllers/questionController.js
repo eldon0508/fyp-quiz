@@ -1,22 +1,10 @@
 const db = require("../database");
 
 const index = (req, res) => {
-  const query = `SELECT q.*, qu.name as quiz_name
-      FROM questions q
-      LEFT JOIN quizzes qu
-      ON q.quiz_id = qu.id
-      WHERE q.deleted_at IS NULL`;
+  const query = `SELECT * FROM questions WHERE deleted_at IS NULL`;
   db.query(query, (err, data) => {
     if (err) return res.json(err);
     return res.json({ data: data });
-  });
-};
-
-const create = (req, res) => {
-  const query = `SELECT id, name FROM quizzes WHERE deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ quizzes: data });
   });
 };
 
@@ -26,7 +14,6 @@ const store = (req, res) => {
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
-      quiz_id: req.body.quiz_id,
       question_text: req.body.question_text,
       feedback: req.body.feedback,
       created_at: dt,
@@ -47,11 +34,10 @@ const store = (req, res) => {
 
 const edit = (req, res) => {
   const query = `SELECT * FROM questions WHERE id = ${req.params.id};
-        SELECT id, name FROM quizzes WHERE deleted_at IS NULL;
         SELECT * FROM answers WHERE question_id = ${req.params.id} AND deleted_at IS NULL`;
   db.query(query, (err, data) => {
     if (err) return res.json(err);
-    return res.json({ data: data[0][0], quizzes: data[1], answers: data[2] });
+    return res.json({ data: data[0][0], answers: data[1] });
   });
 };
 
@@ -61,7 +47,6 @@ const update = (req, res) => {
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
     const q2 = {
-      quiz_id: req.body.quiz_id,
       question_text: req.body.question_text,
       feedback: req.body.feedback,
       updated_at: dt,
@@ -94,4 +79,4 @@ const destroy = (req, res) => {
   }
 };
 
-module.exports = { index, create, store, edit, update, destroy };
+module.exports = { index, store, edit, update, destroy };
