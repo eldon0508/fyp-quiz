@@ -120,8 +120,8 @@ export default function SignUp(props) {
           navigate("/");
         }
       } else {
-        // navigate("/signup");
         // duplicate username
+        navigate(0);
       }
     } catch (err) {
       console.error(err);

@@ -67,21 +67,13 @@ export default function AppAppBar() {
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
-            <SitemarkIcon />
+            <Link to="/">
+              <SitemarkIcon />
+            </Link>
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <Link to="/">
                 <Button variant="text" color="info" size="small">
-                  Quiz
-                </Button>
-              </Link>
-              <Link to="/articles">
-                <Button
-                  variant="text"
-                  color="info"
-                  size="small"
-                  sx={{ minWidth: 0 }}
-                >
-                  Articles
+                  Home
                 </Button>
               </Link>
             </Box>
@@ -153,14 +145,9 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                <Link to="/quizzes">
+                <Link to="/">
                   <Button variant="text" color="info" size="small">
-                    Quiz
-                  </Button>
-                </Link>
-                <Link to="/articles">
-                  <Button variant="text" color="info" size="small">
-                    Articles
+                    Home
                   </Button>
                 </Link>
                 <Divider sx={{ my: 3 }} />
