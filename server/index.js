@@ -119,7 +119,6 @@ app.get("/getAuthUser", (req, res) => {
 });
 
 app.get("/profile", ensureAuthenticated, (req, res) => {
-  console.log("Profile route handler reached"); // Add this log
   try {
     const q = `SELECT * FROM users WHERE id = ${req.user.id}`;
     db.query(q, (err, data) => {

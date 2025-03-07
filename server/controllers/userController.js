@@ -8,31 +8,6 @@ const index = (req, res) => {
   });
 };
 
-// const store = (req, res) => {
-//   db.beginTransaction();
-
-//   try {
-//     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-//     const q2 = {
-//       firstname: req.body.firstname,
-//       lastname: req.body.lastname,
-//       description: req.body.description,
-//       created_at: dt,
-//       updated_at: dt,
-//     };
-
-//     const query = `INSERT users SET ?`;
-
-//     db.query(query, q2);
-//     db.commit();
-//     return res.json({ success: true });
-//   } catch (err) {
-//     db.rollback();
-//     console.error(err);
-//     return res.status(500).json({ success: false });
-//   }
-// };
-
 const edit = (req, res) => {
   const query = `SELECT username, firstname, lastname, dob FROM users WHERE id = ${req.params.id}`;
   db.query(query, (err, data) => {

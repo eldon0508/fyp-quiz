@@ -71,7 +71,7 @@ export default function Attempts() {
 
   const loadAttempts = async () => {
     try {
-      const res = await axios.get("/profile");
+      const res = await axios.get("/profile-attempts");
       if (res.data.success) {
         setAttempts(res.data.data);
       }
