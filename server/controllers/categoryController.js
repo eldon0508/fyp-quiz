@@ -20,7 +20,7 @@ const store = (req, res) => {
       updated_at: dt,
     };
 
-    const query = `INSERT categories SET ?`;
+    const query = `INSERT INTO categories SET ?`;
 
     db.query(query, q2);
     db.commit();

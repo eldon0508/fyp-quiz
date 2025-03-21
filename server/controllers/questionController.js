@@ -20,7 +20,7 @@ const store = (req, res) => {
       updated_at: dt,
     };
 
-    const query = `INSERT questions SET ?`;
+    const query = `INSERT INTO questions SET ?`;
 
     db.query(query, q2);
     db.commit();

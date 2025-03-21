@@ -66,7 +66,7 @@ app.post("/signup", async (req, res) => {
           updated_at: dt,
         };
 
-        var query = `INSERT users SET ?`;
+        var query = `INSERT INTO users SET ?`;
         db.query(query, q2);
         db.commit();
         return res.json({ success: true });
