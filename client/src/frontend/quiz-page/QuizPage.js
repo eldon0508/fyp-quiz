@@ -25,7 +25,6 @@ export default function QuizPage(props) {
             id="scaleble-content"
           >
             <MainContent />
-            <Latest />
           </Container>
           <Footer />
         </div>

@@ -56,7 +56,6 @@ const update = async (req, res) => {
 
 const upload = async (req, res) => {
   try {
-    console.log(req.files, "ababab", req.body);
     var storeDir = "/images/articles",
       dir = path.dirname(__dirname) + "/public" + storeDir;
 

@@ -123,7 +123,6 @@ export default function Questions() {
         questionCorrect,
       });
       if (res.data.success) {
-        console.log(`Test result is: ${res.data.vulRate}%.`);
         alert(`Your vulnerability rate is ${res.data.vulRate}%.`);
         navigate("/profile");
       }
