@@ -24,14 +24,12 @@ const Card = styled(MuiCard)(({ theme }) => ({
   width: "100%",
   padding: theme.spacing(4),
   gap: theme.spacing(2),
-  boxShadow:
-    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
+  boxShadow: "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
   [theme.breakpoints.up("sm")]: {
     width: "450px",
   },
   ...theme.applyStyles("dark", {
-    boxShadow:
-      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
+    boxShadow: "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
   }),
 }));
 
@@ -57,15 +55,11 @@ export default function SignInCard() {
         navigate("/");
       } else {
         setEmailError(true);
-        setEmailErrorMessage(
-          "The email and/or the password are incorrect. Please try again."
-        );
+        setEmailErrorMessage("The email and/or the password are incorrect. Please try again.");
       }
     } catch (err) {
       setEmailError(true);
-      setEmailErrorMessage(
-        "The email and/or the password are incorrect. Please try again."
-      );
+      setEmailErrorMessage("The email and/or the password are incorrect. Please try again.");
       console.error(err);
     }
   };
@@ -93,11 +87,7 @@ export default function SignInCard() {
       <Box sx={{ display: { xs: "flex", md: "none" } }}>
         <SitemarkIcon />
       </Box>
-      <Typography
-        component="h1"
-        variant="h4"
-        sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
-      >
+      <Typography component="h1" variant="h4" sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}>
         Sign in
       </Typography>
       <Box
@@ -147,17 +137,8 @@ export default function SignInCard() {
             variant="outlined"
           />
         </FormControl>
-        <FormControlLabel
-          control={<Checkbox value="remember" color="primary" />}
-          label="Remember me"
-        />
-        <ForgotPassword open={open} handleClose={handleClose} />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          onClick={validateInputs}
-        >
+        <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+        <Button type="submit" fullWidth variant="contained" onClick={validateInputs}>
           Sign in
         </Button>
         <Typography sx={{ textAlign: "center" }}>
@@ -169,6 +150,7 @@ export default function SignInCard() {
           </span>
         </Typography>
       </Box>
+      <ForgotPassword open={open} handleClose={handleClose} />
     </Card>
   );
 }

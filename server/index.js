@@ -8,9 +8,11 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const logger = require("morgan");
 const fileUpload = require("express-fileupload");
+const nodemailer = require("nodemailer");
 
 const passport = require("passport");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 const PORT = process.env.PORT || 3001;
 const saltRounds = 12;
@@ -22,18 +24,36 @@ app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(flash());
 app.use(fileUpload());
-app.use(cookieParser("secret"));
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
 app.use(
   session({
-    secret: "fyp-quiz-secret",
+    secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
-    cookie: { secure: false },
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Only transmit over HTTPS in production
+      httpOnly: true, // Prevent client-side JavaScript access
+      sameSite: "lax", // Mitigate CSRF
+      maxAge: 1000 * 60 * 60 * 2, // Expire after 2 hours
+    },
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);
+
+// Node mailer configuration for OTP
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 /* Quizzer Router */
 function ensureAuthenticated(req, res, next) {
@@ -88,6 +108,32 @@ app.post("/signout", (req, res) => {
     console.log("user logout success", req.user);
     return res.redirect("/");
   });
+});
+
+app.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  const randomString = Math.random().toString(20).substring(2, 12);
+  const hashedPassword = bcrypt.hashSync(randomString, saltRounds);
+  const updateQuery = "UPDATE users SET password = $1 WHERE username = $2";
+  await db.query(updateQuery, [hashedPassword, email]);
+
+  // Prepare the email message options.
+  const mailOptions = {
+    from: "no-reply@quiz.com",
+    to: email,
+    subject: "Forgot Password - Temporary Password",
+    text: `You have requested to reset your password. Please refer to following.\nYour temporary password is ${randomString}`,
+  };
+
+  try {
+    // Send email and log the response.
+    await transporter.sendMail(mailOptions);
+    console.log("Forgot password email sent successfully.");
+    return res.status(200).json({ success: true });
+  } catch (emailError) {
+    console.error("Error sending forgot password email:", emailError);
+    return res.status(500).json({ success: false });
+  }
 });
 
 app.get("/getAuthUser", (req, res) => {
@@ -249,7 +295,6 @@ app.delete("/profile-delete", ensureAuthenticated, async (req, res) => {
 app.post("/take-quiz", ensureAuthenticated, async (req, res) => {
   try {
     const { quiz_id, quesNum } = req.body;
-    console.log(req.body, "ankdf");
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
 
     // Create attempt and update user lastest attempt time
