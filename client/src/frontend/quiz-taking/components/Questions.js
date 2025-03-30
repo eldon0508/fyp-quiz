@@ -5,14 +5,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import {
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
-  Radio,
-  Stack,
-} from "@mui/material";
+import { RadioGroup, FormControlLabel, FormControl, FormLabel, Radio, Stack } from "@mui/material";
 import Divider from "@mui/material/Divider";
 
 const correctPrompts = [
@@ -62,18 +55,16 @@ export default function Questions() {
   const loadQuiz = async () => {
     try {
       const res = await axios.get(window.location.pathname);
-      if (res.status === 401 || res.status === 403) {
-        navigate("/signin");
-      }
-      if (res.data.success) {
-        setQuestions(res.data.questions);
-        setQuesionLength(Object.keys(res.data.questions).length);
-        setQuiz(res.data.quiz);
-        setAttemptId(res.data.attempt_id);
-      }
+      setQuestions(res.data.questions);
+      setQuesionLength(Object.keys(res.data.questions).length);
+      setQuiz(res.data.quiz);
+      setAttemptId(res.data.attempt_id);
     } catch (error) {
       if (error.response.status === 401) {
         navigate("/signin");
+      }
+      if (error.response.status === 403) {
+        navigate("/");
       }
     }
   };
@@ -152,12 +143,7 @@ export default function Questions() {
         </Typography>
       </Box>
       {start ? (
-        <Stack
-          spacing={1}
-          border={"solid 0.5px"}
-          borderRadius={1}
-          padding="1.5rem"
-        >
+        <Stack spacing={1} border={"solid 0.5px"} borderRadius={1} padding="1.5rem">
           <FormControl sx={{ m: 3 }} variant="standard">
             <FormLabel id="question-title">
               <Typography variant="subtitle1" gutterBottom>
@@ -185,29 +171,17 @@ export default function Questions() {
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={() =>
-                  handleCheck(questions[currentQuestionIndex].question_id)
-                }
+                onClick={() => handleCheck(questions[currentQuestionIndex].question_id)}
                 disabled={checkDisabled}
               >
                 Check
               </Button>
               {showSubmit ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSubmit}
-                  disabled={nextDisabled}
-                >
+                <Button variant="contained" color="primary" onClick={handleSubmit} disabled={nextDisabled}>
                   Submit
                 </Button>
               ) : (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNext}
-                  disabled={nextDisabled}
-                >
+                <Button variant="contained" color="primary" onClick={handleNext} disabled={nextDisabled}>
                   Next
                 </Button>
               )}

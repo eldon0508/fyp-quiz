@@ -1,80 +1,56 @@
 const db = require("../database");
 
-const index = (req, res) => {
-  const query = `SELECT * FROM questions WHERE deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data: data });
-  });
+const index = async (req, res) => {
+  const selectQuery = "SELECT * FROM questions WHERE deleted_at IS NULL";
+  const data = await db.query(selectQuery);
+  return res.status(200).json({ data: data });
 };
 
-const store = (req, res) => {
-  db.beginTransaction();
-
+const store = async (req, res) => {
   try {
+    const { question_text, feedback } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const q2 = {
-      question_text: req.body.question_text,
-      feedback: req.body.feedback,
-      created_at: dt,
-      updated_at: dt,
-    };
+    const insertQuery =
+      "INSERT INTO questions (question_text, feedback, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING id";
 
-    const query = `INSERT INTO questions SET ?`;
-
-    db.query(query, q2);
-    db.commit();
-    return res.json({ success: true });
+    const result = await db.query(insertQuery, [question_text, feedback, dt, dt]);
+    return res.status(201).json({ success: true, result: result[0] });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Question store error:", err);
     return res.status(500).json({ success: false });
   }
 };
 
-const edit = (req, res) => {
-  const query = `SELECT * FROM questions WHERE id = ${req.params.id};
-        SELECT * FROM answers WHERE question_id = ${req.params.id} AND deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data: data[0][0], answers: data[1] });
-  });
+const edit = async (req, res) => {
+  const selectQuery = "SELECT * FROM questions WHERE id = $1";
+  const searchQuery = "SELECT * FROM answers WHERE question_id = $1 AND deleted_at IS NULL";
+  const data = await db.query(selectQuery, [req.params.id]);
+  const answers = await db.query(searchQuery, [req.params.id]);
+  return res.json({ data: data[0], answers: answers });
 };
 
-const update = (req, res) => {
-  db.beginTransaction();
-
+const update = async (req, res) => {
   try {
+    const { question_text, feedback } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const q2 = {
-      question_text: req.body.question_text,
-      feedback: req.body.feedback,
-      updated_at: dt,
-    };
-    const query = `UPDATE questions SET ? WHERE id = "${req.params.id}"`;
+    const updateQuery = "UPDATE questions SET question_text = $1, feedback = $2, updated_at = $3 WHERE id = $4";
 
-    db.query(query, q2);
-    db.commit();
-    return res.json({ success: true });
+    await db.query(updateQuery, [question_text, feedback, dt, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Question update error:", err);
     return res.status(500).json({ success: false });
   }
 };
 
-const destroy = (req, res) => {
-  db.beginTransaction();
-
+const destroy = async (req, res) => {
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    query = `UPDATE questions SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
-    db.query(query);
-    db.commit();
-    return res.json({ success: true });
+    const destroyQuery = `UPDATE questions SET deleted_at = $1 WHERE id = $2`;
+    await db.query(destroyQuery, [dt, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Question destroy error:", err);
     return res.status(500).json({ success: false });
   }
 };

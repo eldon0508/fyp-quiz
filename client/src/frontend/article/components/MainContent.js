@@ -212,7 +212,7 @@ export default function MainContent() {
     if (id === undefined) {
       loadAllArticles();
     } else {
-      const res = await axios.get(`/articles?category=${id}`);
+      const res = await axios.get(`/articles?category_id=${id}`);
       if (res.data.success) {
         setArticles(res.data.data);
       }

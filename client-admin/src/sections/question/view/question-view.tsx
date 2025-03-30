@@ -30,12 +30,9 @@ import { useAlert } from "../../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
-type Quiz = {
-  id: number;
-  name: string;
-};
-
 export function QuestionView() {
+  const router = useRouter();
+  const { setAlert } = useAlert();
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
@@ -59,6 +56,10 @@ export function QuestionView() {
       setQuestions(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -215,7 +216,7 @@ export function QuestionCreate() {
     try {
       const res = await axios.post(`http://localhost:3001/admin/question/store`, question);
       if (res.data.success) {
-        router.push("/admin/question");
+        router.push(`/admin/question/${res.data.result.id}/edit`);
         setAlert({ title: "Success", type: "success", context: "Question created successfully!" });
       } else {
         setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
@@ -322,6 +323,10 @@ export function QuestionEdit() {
       setAnswers(res.data.answers);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -334,7 +339,7 @@ export function QuestionEdit() {
     try {
       const result = await axios.put(`http://localhost:3001/admin/question/${id}/update`, question);
       if (result.data.success) {
-        router.push("/admin/question");
+        router.push("/admin/question/");
         setAlert({ title: "Success", type: "success", context: "Question updated successfully!" });
       } else {
         setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });

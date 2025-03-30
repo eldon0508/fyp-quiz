@@ -1,19 +1,24 @@
-const mysql = require("mysql");
+const { Pool } = require("pg");
 
-const conn = mysql.createConnection({
+const pool = new Pool({
+  user: "postgres",
+  password: "password",
   host: "localhost",
-  database: "quiz",
-  user: "root",
-  password: "",
-  multipleStatements: true,
+  port: 5432, // default Postgres port
+  database: "fyp-quiz",
+  max: 20,
+  idleTimeoutMillis: 30000,
 });
 
-conn.connect(function (error) {
-  if (error) {
-    throw error;
-  } else {
-    console.log("MySQL Database is connected Successfully");
+// Function to execute a query
+async function query(text, params) {
+  try {
+    const result = await pool.query(text, params);
+    return result.rows;
+  } catch (err) {
+    console.error("Error executing query", err);
+    throw err; // Re-throw the error so it can be handled where the function is called
   }
-});
+}
 
-module.exports = conn;
+module.exports = { query };

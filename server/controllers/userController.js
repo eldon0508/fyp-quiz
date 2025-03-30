@@ -1,57 +1,40 @@
 const db = require("../database");
 
-const index = (req, res) => {
-  const query = `SELECT * FROM users WHERE role = "2" AND deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data: data });
-  });
+const index = async (req, res) => {
+  const selectQuery = "SELECT * FROM users WHERE role = $1 AND deleted_at IS NULL";
+  const data = db.query(selectQuery, [2]);
+  return res.status(200).json({ data: data });
 };
 
-const edit = (req, res) => {
-  const query = `SELECT username, firstname, lastname, dob FROM users WHERE id = ${req.params.id}`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data: data[0] });
-  });
+const edit = async (req, res) => {
+  const selectQuery = "SELECT username, firstname, lastname, dob FROM users WHERE id = $1";
+  const data = await db.query(selectQuery, [req.params.id]);
+  return res.status(200).json({ data: data[0] });
 };
 
 const update = async (req, res) => {
-  db.beginTransaction();
-
   try {
+    const { firstname, lastname, username, dob } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const q2 = {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      username: req.body.username,
-      dob: req.body.dob,
-      updated_at: dt,
-    };
-    const query = `UPDATE users SET ? WHERE id = "${req.params.id}"`;
+    const updateQuery =
+      "UPDATE users SET firstname = $1, lastname = $2, username = $3, dob = $4, updated_at = $5 WHERE id = $6";
 
-    db.query(query, q2);
-    db.commit();
-    return res.json({ success: true });
+    await db.query(updateQuery, [firstname, lastname, username, dob, dt, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("User update error:", err);
     return res.status(500).json({ success: false });
   }
 };
 
-const destroy = (req, res) => {
-  db.beginTransaction();
-
+const destroy = async (req, res) => {
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    query = `UPDATE users SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
-    db.query(query);
-    db.commit();
-    return res.json({ success: true });
+    const destroyQuery = "UPDATE users SET deleted_at = $1 WHERE id = $2";
+    await db.query(destroyQuery, [dt, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("User destroy error:", err);
     return res.status(500).json({ success: false });
   }
 };

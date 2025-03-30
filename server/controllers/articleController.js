@@ -3,95 +3,58 @@ const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 
-const index = (req, res) => {
-  const query = `
-  SELECT a.*, c.name as category_name
-  FROM articles a
-  LEFT JOIN categories c
-  ON a.category_id = c.id
-  WHERE a.deleted_at IS NULL`;
-
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data: data });
-  });
+const index = async (req, res) => {
+  const selectQuery =
+    "SELECT a.*, c.name as category_name FROM articles a LEFT JOIN categories c ON a.category_id = c.id WHERE a.deleted_at IS NULL";
+  const data = await db.query(selectQuery);
+  return res.status(200).json({ data: data });
 };
 
-const create = (req, res) => {
-  const query = `SELECT id, name FROM categories WHERE deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ categories: data });
-  });
+const create = async (req, res) => {
+  const selectQuery = "SELECT id, name FROM categories WHERE deleted_at IS NULL";
+  const data = await db.query(selectQuery);
+  return res.json({ categories: data });
 };
 
-const store = (req, res) => {
-  db.beginTransaction();
-
+const store = async (req, res) => {
   try {
+    const { category_id, title, subtitle, authors, url, published, content } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const q2 = {
-      category_id: req.body.category_id,
-      title: req.body.title,
-      subtitle: req.body.subtitle,
-      authors: req.body.authors,
-      url: req.body.url,
-      published: req.body.published,
-      content: req.body.content,
-      created_at: dt,
-      updated_at: dt,
-    };
+    const insertQuery =
+      "INSERT INTO articles (category_id, title, subtitle, authors, url, published, content, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)";
 
-    const query = `INSERT INTO articles SET ?`;
-
-    db.query(query, q2);
-    db.commit();
-    return res.json({ success: true });
+    await db.query(insertQuery, [category_id, title, subtitle, authors, url, published, content, dt, dt]);
+    return res.status(201).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Article store error:", err);
     return res.status(500).json({ success: false });
   }
 };
 
-const edit = (req, res) => {
-  const query = `SELECT * FROM articles WHERE id = ${req.params.id}; SELECT id, name FROM categories WHERE deleted_at IS NULL`;
-  db.query(query, (err, data) => {
-    if (err) return res.json(err);
-    return res.json({ data: data[0][0], categories: data[1] });
-  });
+const edit = async (req, res) => {
+  const selectQuery = "SELECT * FROM articles WHERE id = $1";
+  const selectQuery2 = "SELECT id, name FROM categories WHERE deleted_at IS NULL";
+  const data = await db.query(selectQuery, [req.params.id]);
+  const categories = await db.query(selectQuery2);
+  return res.json({ data: data[0], categories: categories });
 };
 
-const update = (req, res) => {
-  db.beginTransaction();
-
+const update = async (req, res) => {
   try {
+    const { category_id, title, subtitle, authors, url, published, content } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const q2 = {
-      category_id: req.body.category_id,
-      title: req.body.title,
-      subtitle: req.body.subtitle,
-      authors: req.body.authors,
-      url: req.body.url,
-      published: req.body.published,
-      content: req.body.content,
-      updated_at: dt,
-    };
-    const query = `UPDATE articles SET ? WHERE id = "${req.params.id}"`;
+    const updateQuery =
+      "UPDATE articles SET category_id = $1, title = $2, subtitle = $3, authors = $4, url = $5, published = $6, content = $7, updated_at = $8 WHERE id = $9";
 
-    db.query(query, q2);
-    db.commit();
-    return res.json({ success: true });
+    await db.query(updateQuery, [category_id, title, subtitle, authors, url, published, content, dt, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Article update error:", err);
     return res.status(500).json({ success: false });
   }
 };
 
-const upload = (req, res) => {
-  db.beginTransaction();
-
+const upload = async (req, res) => {
   try {
     console.log(req.files, "ababab", req.body);
     var storeDir = "/images/articles",
@@ -116,34 +79,23 @@ const upload = (req, res) => {
     // Finish uploading and rename to unique filename
     fs.rename(dir + "/" + oldName, dir + "/" + newName, () => {});
 
-    const q2 = {
-      image: storePath,
-      image_extension: ext,
-    };
-
-    const query = `UPDATE articles SET ? WHERE id = "${req.params.id}"`;
-    db.query(query, q2);
-    db.commit();
-    return res.json({ success: true });
+    const updateQuery = "UPDATE articles SET image = $1, image_extension = $2 WHERE id = $3";
+    await db.query(updateQuery, [storePath, ext, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Article upload error:", err);
     return res.status(500).json({ success: false });
   }
 };
 
-const destroy = (req, res) => {
-  db.beginTransaction();
-
+const destroy = async (req, res) => {
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    query = `UPDATE articles SET deleted_at = "${dt}" WHERE id = "${req.params.id}"`;
-    db.query(query);
-    db.commit();
-    return res.json({ success: true });
+    const destroyQuery = "UPDATE articles SET deleted_at = $1 WHERE id = $2";
+    db.query(destroyQuery, [dt, req.params.id]);
+    return res.status(200).json({ success: true });
   } catch (err) {
-    db.rollback();
-    console.error(err);
+    console.error("Article destroy error:", err);
     return res.status(500).json({ success: false });
   }
 };

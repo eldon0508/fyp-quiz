@@ -8,6 +8,7 @@ import MenuList from "@mui/material/MenuList";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
 
 import { Iconify } from "../../components/iconify";
 import { useAlert } from "../../components/alert/AlertContext";
@@ -61,8 +62,12 @@ export function AnswerTableRow({ row, selected, onSelectRow, reloadDatas }: Answ
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell>{row.answer_text}</TableCell>
-        <TableCell>{row.rate}%</TableCell>
+        <TableCell>
+          <Typography color={row.best_answer === true ? "darkgreen" : ""}>{row.answer_text}</Typography>
+        </TableCell>
+        <TableCell>
+          <Typography color={row.best_answer === true ? "darkgreen" : ""}>{row.rate}%</Typography>
+        </TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
