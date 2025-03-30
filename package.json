@@ -26,9 +26,9 @@
     "http-errors": "~1.6.3",
     "husky": "^9.1.6",
     "morgan": "~1.9.1",
-    "mysql": "^2.18.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
+    "pg": "^8.14.1",
     "uuid": "^11.0.3"
   }
 }

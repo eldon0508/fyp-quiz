@@ -39,6 +39,8 @@ type Category = {
 };
 
 export function ArticleView() {
+  const router = useRouter();
+  const { setAlert } = useAlert();
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
@@ -62,6 +64,10 @@ export function ArticleView() {
       setArticles(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -245,6 +251,10 @@ export function ArticleCreate() {
       setCategories(res.data.categories);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -388,7 +398,7 @@ export function ArticleEdit() {
     subtitle: "",
     authors: "",
     url: "",
-    published: -1,
+    published: null,
     content: "",
   });
   const [categories, setCategories] = useState<Category[]>([]);
@@ -408,6 +418,10 @@ export function ArticleEdit() {
       setCategories(res.data.categories);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -420,7 +434,6 @@ export function ArticleEdit() {
       files: FileList;
     };
     setImage(target.files[0]);
-    console.log(image, target.files[0], target.id, "\n", target.name);
   };
 
   const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -582,7 +595,7 @@ export function ArticleEdit() {
                     required
                     onChange={(e) => onInputChange(e)}
                     select
-                    value={article.published}
+                    value={article.published ?? (article.published === true ? 1 : 0)}
                   >
                     <MenuItem value={-1} disabled>
                       --- Select Status ---

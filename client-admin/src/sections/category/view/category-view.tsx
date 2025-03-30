@@ -29,6 +29,8 @@ import { useAlert } from "../../../components/alert/AlertContext";
 // ----------------------------------------------------------------------
 
 export function CategoryView() {
+  const router = useRouter();
+  const { setAlert } = useAlert();
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
@@ -52,6 +54,10 @@ export function CategoryView() {
       setCategories(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -211,8 +217,11 @@ export function CategoryCreate() {
         setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       }
     } catch (err) {
-      setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       console.error(err);
+      if (err.response.status === 401) {
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+        router.push("/admin/signin");
+      } else setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
     }
   };
 
@@ -284,6 +293,10 @@ export function CategoryEdit() {
       setCategory(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 

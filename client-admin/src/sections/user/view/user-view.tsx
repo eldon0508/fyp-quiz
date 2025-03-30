@@ -29,6 +29,8 @@ import { useAlert } from "../../../components/alert/AlertContext";
 // ----------------------------------------------------------------------
 
 export function UserView() {
+  const router = useRouter();
+  const { setAlert } = useAlert();
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
@@ -52,6 +54,10 @@ export function UserView() {
       setUsers(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -303,6 +309,10 @@ export function UserEdit() {
       setUser(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 

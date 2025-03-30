@@ -77,9 +77,8 @@ export default function DetailsForm({ profile }) {
             <Grid container sx={{ margin: 1 }}>
               <FormGrid>
                 <Typography variant="subtitle1">
-                  Please confirm that you would like to delete your account.
-                  This action is irreversible and all associated data will be
-                  permanently deleted.
+                  Please confirm that you would like to delete your account. This action is irreversible and all
+                  associated data will be permanently deleted.
                 </Typography>
               </FormGrid>
             </Grid>
@@ -88,12 +87,7 @@ export default function DetailsForm({ profile }) {
         <DialogActions sx={{ margin: 1 }}>
           <Stack spacing={2} direction="row">
             <Button onClick={handleClose}>Cancel</Button>
-            <Button
-              type="button"
-              variant="contained"
-              color="secondary"
-              onClick={handleDelete}
-            >
+            <Button type="button" variant="contained" color="secondary" onClick={handleDelete}>
               Confirm
             </Button>
           </Stack>
@@ -124,9 +118,7 @@ export default function DetailsForm({ profile }) {
           />
         </FormGrid>
         <FormGrid size={{ xs: 12, md: 6 }}>
-          <FormLabel htmlFor="dob" required>
-            Date of Birth
-          </FormLabel>
+          <FormLabel htmlFor="dob">Date of Birth</FormLabel>
           <OutlinedInput
             id="dob"
             name="dob"

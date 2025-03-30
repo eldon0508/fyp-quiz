@@ -100,10 +100,7 @@ export default function Attempts() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.post("/profile-quiz-feedback", {
-        feedback,
-        quizId,
-      });
+      const res = await axios.post("/profile-quiz-feedback", { feedback, quizId });
       if (res.data.success) {
         console.log("Feedback submitted");
         alert("Your feedback has been submitted. Thank you for your help.");
@@ -164,11 +161,7 @@ export default function Attempts() {
             expanded={expanded === `panel${index}`}
             onChange={handleChange(`panel${index}`)}
           >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1-content"
-              id="panel1-header"
-            >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1-content" id="panel1-header">
               Attempt #{index + 1}
             </AccordionSummary>
             <AccordionDetails>
@@ -177,10 +170,7 @@ export default function Attempts() {
               </Typography>
               <List>
                 <ListItem sx={{ py: 1, px: 0 }}>
-                  <ListItemText
-                    primary="Question Correct"
-                    secondary={`${attempt.question_number} total`}
-                  />
+                  <ListItemText primary="Question Correct" secondary={`${attempt.question_number} total`} />
                   <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                     {attempt.question_correct}
                   </Typography>
@@ -205,12 +195,7 @@ export default function Attempts() {
                 </ListItem>
               </List>
               <Divider />
-              <Stack
-                direction="column"
-                divider={<Divider flexItem />}
-                spacing={2}
-                sx={{ my: 2 }}
-              >
+              <Stack direction="column" divider={<Divider flexItem />} spacing={2} sx={{ my: 2 }}>
                 <div>
                   <Typography variant="h5" gutterBottom>
                     Quiz details
@@ -218,56 +203,32 @@ export default function Attempts() {
                   <Typography variant="h6" gutterBottom>
                     {attempt.quiz.name}
                   </Typography>
-                  <Typography
-                    variant="subtitle2"
-                    sx={{ color: "text.secondary" }}
-                  >
+                  <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
                     {attempt.quiz.description}
                   </Typography>
                 </div>
                 <div>
                   <Grid container>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      useFlexGap
-                      sx={{ width: "100%", mb: 1 }}
-                    >
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "text.secondary" }}
-                      >
+                    <Stack direction="row" spacing={1} useFlexGap sx={{ width: "100%", mb: 1 }}>
+                      <Typography variant="body1" sx={{ color: "text.secondary" }}>
                         Date:
                       </Typography>
-                      <Typography variant="body2">
-                        {attempt.created_at.split("T")[0]}
-                      </Typography>
+                      <Typography variant="body2">{attempt.created_at.split("T")[0]}</Typography>
                     </Stack>
                   </Grid>
                   <Grid container>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      useFlexGap
-                      sx={{ width: "100%", mb: 1 }}
-                    >
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "text.secondary" }}
-                      >
+                    <Stack direction="row" spacing={1} useFlexGap sx={{ width: "100%", mb: 1 }}>
+                      <Typography variant="body1" sx={{ color: "text.secondary" }}>
                         Time:
                       </Typography>
                       <Typography variant="body2">
-                        {new Date(attempt.created_at).toLocaleTimeString(
-                          "en-GB",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            hour12: true,
-                            timeZone: "UTC",
-                          }
-                        )}
+                        {new Date(attempt.created_at).toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          hour12: true,
+                          timeZone: "UTC",
+                        })}
                       </Typography>
                     </Stack>
                   </Grid>
@@ -275,11 +236,7 @@ export default function Attempts() {
               </Stack>
             </AccordionDetails>
             <AccordionActions>
-              <IconButton
-                aria-label="feedback"
-                color="primary"
-                onClick={() => handleOpen(attempt.quiz.id)}
-              >
+              <IconButton aria-label="feedback" color="primary" onClick={() => handleOpen(attempt.quiz.id)}>
                 <FeedbackIcon />
               </IconButton>
               <IconButton aria-label="print" color="primary">

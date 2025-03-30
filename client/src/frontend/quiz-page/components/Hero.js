@@ -72,17 +72,16 @@ export default function Hero() {
       console.error(err);
     }
   };
+
   return (
     <Box
       id="hero"
       sx={(theme) => ({
         width: "100%",
         backgroundRepeat: "no-repeat",
-        backgroundImage:
-          "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 90%), transparent)",
+        backgroundImage: "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 90%), transparent)",
         ...theme.applyStyles("dark", {
-          backgroundImage:
-            "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)",
+          backgroundImage: "radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)",
         }),
       })}
     >
@@ -95,11 +94,7 @@ export default function Hero() {
           pb: { xs: 8, sm: 12 },
         }}
       >
-        <Stack
-          spacing={2}
-          useFlexGap
-          sx={{ alignItems: "center", width: { xs: "100%", sm: "70%" } }}
-        >
+        <Stack spacing={2} useFlexGap sx={{ alignItems: "center", width: { xs: "100%", sm: "70%" } }}>
           <Typography
             variant="h1"
             sx={{
@@ -143,9 +138,8 @@ export default function Hero() {
               width: { sm: "100%", md: "80%" },
             }}
           >
-            Discover your vulnerabilities and learn to protect yourself from
-            sophisticated social engineering tactics. Test your awareness and
-            enhance your online security today.
+            Discover your vulnerabilities and learn to protect yourself from sophisticated social engineering tactics.
+            Test your awareness and enhance your online security today.
           </Typography>
           {authUser ? (
             <form onSubmit={(e) => handleSubmit(e)}>
@@ -175,13 +169,7 @@ export default function Hero() {
                     15
                   </MenuItem>
                 </TextField>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  sx={{ minWidth: "fit-content" }}
-                  type="submit"
-                >
+                <Button variant="contained" color="primary" size="small" sx={{ minWidth: "fit-content" }} type="submit">
                   Start now
                 </Button>
               </Stack>
@@ -214,22 +202,13 @@ export default function Hero() {
                 </MenuItem>
               </TextField>
               <Link href="/signin" color="primary">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  sx={{ minWidth: "fit-content" }}
-                >
+                <Button variant="contained" color="primary" size="small" sx={{ minWidth: "fit-content" }}>
                   Start&nbsp;now
                 </Button>
               </Link>
             </Stack>
           )}
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ textAlign: "center" }}
-          >
+          <Typography variant="caption" color="text.secondary" sx={{ textAlign: "center" }}>
             By clicking &quot;Start now&quot; you agree to our&nbsp;
             <Link href="#" color="primary">
               Terms & Conditions

@@ -32,6 +32,8 @@ import { useAlert } from "../../../components/alert/AlertContext";
 // ----------------------------------------------------------------------
 
 export function AnswerView() {
+  const router = useRouter();
+  const { setAlert } = useAlert();
   const table = useTable();
 
   const [filterName, setFilterName] = useState("");
@@ -55,6 +57,10 @@ export function AnswerView() {
       setAnswers(res.data.data);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -203,7 +209,7 @@ export function AnswerCreate() {
     question_id,
     answer_text: "",
     rate: 0,
-    best_answer: 0,
+    best_answer: false,
   });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -228,7 +234,7 @@ export function AnswerCreate() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-    setAnswer({ ...answer, best_answer: event.target.checked === true ? 1 : 0 });
+    setAnswer({ ...answer, best_answer: event.target.checked });
   };
 
   const handleCancel = () => router.back();
@@ -311,13 +317,13 @@ export function AnswerCreate() {
 
 export function AnswerEdit() {
   const { id } = useParams();
-  const { setAlert } = useAlert();
   const router = useRouter();
+  const { setAlert } = useAlert();
   const [checked, setChecked] = useState(false);
   const [answer, setAnswer] = useState({
     answer_text: "",
     rate: 0,
-    best_answer: 0,
+    best_answer: false,
   });
 
   const { answer_text, rate } = answer;
@@ -330,9 +336,13 @@ export function AnswerEdit() {
     try {
       const res = await axios.get(`http://localhost:3001/admin/answer/${id}/edit`);
       setAnswer(res.data.data);
-      setChecked(res.data.data.best_answer === 1 ? true : false);
+      setChecked(res.data.data.best_answer);
     } catch (err) {
       console.error(err);
+      if (err.response.status === 401) {
+        router.push("/admin/signin");
+        setAlert({ title: "Opps", type: "error", context: "Unauthorized, please sign in to access." });
+      }
     }
   };
 
@@ -358,7 +368,7 @@ export function AnswerEdit() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
-    setAnswer({ ...answer, best_answer: event.target.checked === true ? 1 : 0 });
+    setAnswer({ ...answer, best_answer: event.target.checked });
   };
 
   const handleCancel = () => router.back();
