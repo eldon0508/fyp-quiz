@@ -55,7 +55,7 @@ module.exports = async function (passport) {
         firstname: user.firstname,
         lastname: user.lastname,
         role: user.role,
-        strategy: user.role === 1 ? "admin-local" : "quizzer-local", // Simplified
+        strategy: user.role === 1 ? "admin-local" : "quizzer-local",
       });
     });
   });

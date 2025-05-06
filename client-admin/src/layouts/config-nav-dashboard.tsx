@@ -20,11 +20,6 @@ export const navData = [
     title: "Articles",
     path: "/admin/article",
     icon: icon("ic-article"),
-    // info: (
-    //   <Label color="error" variant="inverted">
-    //     +3
-    //   </Label>
-    // ),
   },
   {
     title: "Quizzes",
@@ -36,24 +31,19 @@ export const navData = [
     path: "/admin/question",
     icon: icon("ic-question"),
   },
-  // {
-  //   title: 'Answers',
-  //   path: '/admin/answer',
-  //   icon: icon('ic-answer'),
-  // },
   {
     title: "Users",
     path: "/admin/user",
     icon: icon("ic-user"),
   },
-  {
-    title: "Sign in",
-    path: "/admin/signin",
-    icon: icon("ic-lock"),
-  },
-  {
-    title: "Not found",
-    path: "/404",
-    icon: icon("ic-disabled"),
-  },
+  // {
+  //   title: "Sign in",
+  //   path: "/admin/signin",
+  //   icon: icon("ic-lock"),
+  // },
+  // {
+  //   title: "Not found",
+  //   path: "/404",
+  //   icon: icon("ic-disabled"),
+  // },
 ];

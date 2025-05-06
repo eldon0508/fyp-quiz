@@ -6,13 +6,11 @@ import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Popover from "@mui/material/Popover";
 import TableRow from "@mui/material/TableRow";
-import Checkbox from "@mui/material/Checkbox";
 import MenuList from "@mui/material/MenuList";
 import TableCell from "@mui/material/TableCell";
 import IconButton from "@mui/material/IconButton";
 import MenuItem, { menuItemClasses } from "@mui/material/MenuItem";
 
-import { Label } from "src/components/label";
 import { Iconify } from "src/components/iconify";
 import { useAlert } from "../../components/alert/AlertContext";
 
@@ -66,7 +64,7 @@ export function UserTableRow({ row, selected, onSelectRow, reloadDatas }: UserTa
         <TableCell component="th" scope="row">
           <Box gap={2} display="flex" alignItems="center">
             <Avatar alt={row.firstname} src="" />
-            {row.firstname} {row.lastname}
+            {row.firstname}&nbsp;{row.lastname}
           </Box>
         </TableCell>
         <TableCell>{row.dob}</TableCell>

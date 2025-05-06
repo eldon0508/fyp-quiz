@@ -170,7 +170,7 @@ export default function Hero() {
                   </MenuItem>
                 </TextField>
                 <Button variant="contained" color="primary" size="small" sx={{ minWidth: "fit-content" }} type="submit">
-                  Start now
+                  Start&nbsp;Now
                 </Button>
               </Stack>
             </form>
@@ -203,7 +203,7 @@ export default function Hero() {
               </TextField>
               <Link href="/signin" color="primary">
                 <Button variant="contained" color="primary" size="small" sx={{ minWidth: "fit-content" }}>
-                  Start&nbsp;now
+                  Start&nbsp;Now
                 </Button>
               </Link>
             </Stack>
@@ -216,7 +216,6 @@ export default function Hero() {
             .
           </Typography>
         </Stack>
-        {/* <StyledBox id="image" /> */}
       </Container>
     </Box>
   );

@@ -85,9 +85,7 @@ describe("answerController store function, store a new entry into the database",
       updated_at: "2025-01-01 23:00:00+00",
       deleted_at: null,
     };
-    mockRequest = {
-      body: mockStoreEntry,
-    };
+    mockRequest = { body: mockStoreEntry };
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -149,9 +147,7 @@ describe("answerController edit function, return a selected entry for editing fr
         deleted_at: null,
       },
     ];
-    mockRequest = {
-      params: { id: 1 },
-    };
+    mockRequest = { params: { id: 1 } };
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -187,9 +183,7 @@ describe("answerController update function, update an existing entry in database
     };
     mockRequest = {
       body: mockUpdateEntry,
-      params: {
-        id: "1",
-      },
+      params: { id: "1" },
     };
     mockResponse = {
       status: jest.fn().mockReturnThis(),
@@ -242,9 +236,7 @@ describe("answerController destroy function, soft-delete an existing entry in da
 
   beforeEach(() => {
     mockRequest = {
-      params: {
-        id: "1",
-      },
+      params: { id: "1" },
     };
     mockResponse = {
       status: jest.fn().mockReturnThis(),

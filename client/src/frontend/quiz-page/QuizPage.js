@@ -7,7 +7,6 @@ import Footer from "../layout/Footer";
 import AppTheme from "../shared-theme/AppTheme";
 import Container from "@mui/material/Container";
 import MainContent from "../article/components/MainContent";
-import Latest from "../article/components/Latest";
 
 export default function QuizPage(props) {
   return (
@@ -21,7 +20,7 @@ export default function QuizPage(props) {
           <Container
             maxWidth="lg"
             component="main"
-            sx={{ display: "flex", flexDirection: "column", my: 16, gap: 4 }}
+            sx={{ display: "flex", flexDirection: "column", my: 4, gap: 4 }}
             id="scaleble-content"
           >
             <MainContent />
