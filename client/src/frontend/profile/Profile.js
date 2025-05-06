@@ -55,7 +55,7 @@ export default function Profile(props) {
 
   const loadProfile = async () => {
     try {
-      const res = await axios.get("/profile");
+      const res = await axios.get("/api/profile");
       if (res.data.success) {
         setProfile(res.data.profile);
       }

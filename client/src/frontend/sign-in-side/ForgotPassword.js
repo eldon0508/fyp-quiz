@@ -20,9 +20,10 @@ function ForgotPassword({ open, handleClose }) {
 
     try {
       const data = new FormData(e.currentTarget);
-      const res = await axios.post("/forgot-password", data);
+      const res = await axios.post("/api/forgot-password", data);
       if (res.data.success) {
         handleClose();
+        alert("Password reset instructions have been sent to the provided email address, if an account exists.");
         navigate("/signin");
       } else {
         setEmailError(true);
@@ -36,15 +37,7 @@ function ForgotPassword({ open, handleClose }) {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      component="form"
-      onSubmit={handleSubmit}
-      PaperProps={{
-        sx: { backgroundImage: "none" },
-      }}
-    >
+    <Dialog open={open} onClose={handleClose} component="form" onSubmit={handleSubmit}>
       <DialogTitle>Reset password</DialogTitle>
       <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, width: "100%" }}>
         <DialogContentText>

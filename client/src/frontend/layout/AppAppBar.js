@@ -41,7 +41,7 @@ export default function AppAppBar() {
   }, []);
 
   const getAuthUser = async () => {
-    const res = await axios.get("/getAuthUser");
+    const res = await axios.get("/api/getAuthUser");
     if (res.data.data) {
       setAuthUser(res.data.data);
     }
@@ -92,7 +92,7 @@ export default function AppAppBar() {
                     Profile
                   </Button>
                 </Link>
-                <form method="post" action="/signout">
+                <form method="post" action="/api/signout">
                   <Button
                     color="primary"
                     variant="outlined"
@@ -165,7 +165,7 @@ export default function AppAppBar() {
                         </Button>
                       </MenuItem>
                     </Link>
-                    <form method="post" action="/signout">
+                    <form method="post" action="/api/signout">
                       <MenuItem>
                         <Button
                           color="primary"

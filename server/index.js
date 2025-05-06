@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const db = require("./database");
 const cors = require("cors");
 const path = require("path");
 const flash = require("connect-flash");
@@ -13,6 +12,8 @@ const nodemailer = require("nodemailer");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
+
+const db = require("./database");
 
 const PORT = process.env.PORT || 3001;
 const saltRounds = 12;
@@ -119,10 +120,18 @@ app.post("/forgot-password", async (req, res) => {
 
   // Prepare the email message options.
   const mailOptions = {
-    from: "no-reply@quiz.com",
+    from: {
+      name: "SE Quiz Team",
+      address: "no-reply@quiz.com",
+    },
     to: email,
     subject: "Forgot Password - Temporary Password",
-    text: `You have requested to reset your password. Please refer to following.\nYour temporary password is ${randomString}`,
+    text: `Dear User,\n\nA request has been initiated to reset your password. Please use the following temporary password to log in to your account:
+    \nTEMPORARY PASSWORD: ${randomString}
+    \nUpon successful login, please create a new, permanent password. This can be done within your profile settings.
+    \nFor your security, please note: If you did not request this password reset, please sign in with the temporary password and update a secure password ASAP. However, if you have any concerns about the security of your account, please contact our support team immediately at wick@gmail.com.
+    \nSincerely,
+    \nThe SE Quiz Support Team`,
   };
 
   try {
@@ -276,16 +285,15 @@ app.post("/profile-quiz-feedback", ensureAuthenticated, async (req, res) => {
 app.delete("/profile-delete", ensureAuthenticated, async (req, res) => {
   try {
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const deleteQuery = "UPDATE users SET deleted_at = $1 WHERE id = $2";
-    await db.query(deleteQuery, [dt, req.user.id]);
+    const deleteQuery = "UPDATE users SET deleted_at = $1, active = $2 WHERE id = $3";
+    await db.query(deleteQuery, [dt, false, req.user.id]);
 
     req.logout(function (err) {
       if (err) return next(err);
 
       console.log("user logout success", req.user);
-      return res.redirect("/");
+      return res.status(200).json({ success: true });
     });
-    // return res.status(200).json({ success: true });
   } catch (err) {
     console.error("Profile delete error:", err);
     return res.status(500).json({ success: false });

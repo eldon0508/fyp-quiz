@@ -47,7 +47,7 @@ export default function Hero() {
   const [quesNum, setQuesNum] = React.useState(5);
 
   const getAuthUser = async () => {
-    const res = await axios.get("/getAuthUser");
+    const res = await axios.get("/api/getAuthUser");
     if (res.data.success) {
       setAuthUser(res.data.data);
     }
@@ -64,7 +64,7 @@ export default function Hero() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/take-quiz", { quesNum, quiz_id: 1 });
+      const res = await axios.post("/api/take-quiz", { quesNum, quiz_id: 1 });
       if (res.data.success) {
         navigate(`/quiz-taking/${res.data.attempt_id}`);
       }

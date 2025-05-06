@@ -113,9 +113,9 @@ export default function SignUp(props) {
     }
     try {
       const data = new FormData(event.currentTarget);
-      const res = await axios.post("/signup", data);
+      const res = await axios.post("/api/signup", data);
       if (res.data.success) {
-        const signInRes = await axios.post("/signin", data);
+        const signInRes = await axios.post("/api/signin", data);
         if (signInRes.data.success) {
           navigate("/");
         }

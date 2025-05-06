@@ -71,7 +71,7 @@ export default function Attempts() {
 
   const loadAttempts = async () => {
     try {
-      const res = await axios.get("/profile-attempts");
+      const res = await axios.get("/api/profile-attempts");
       if (res.data.success) {
         setAttempts(res.data.data);
       }
@@ -100,7 +100,7 @@ export default function Attempts() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.post("/profile-quiz-feedback", { feedback, quizId });
+      const res = await axios.post("/api/profile-quiz-feedback", { feedback, quizId });
       if (res.data.success) {
         console.log("Feedback submitted");
         alert("Your feedback has been submitted. Thank you for your help.");
