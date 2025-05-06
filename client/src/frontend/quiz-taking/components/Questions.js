@@ -54,7 +54,7 @@ export default function Questions() {
 
   const loadQuiz = async () => {
     try {
-      const res = await axios.get(window.location.pathname);
+      const res = await axios.get(`/api/${window.location.pathname}`);
       setQuestions(res.data.questions);
       setQuesionLength(Object.keys(res.data.questions).length);
       setQuiz(res.data.quiz);
@@ -77,7 +77,7 @@ export default function Questions() {
       setNextDisabled(false);
       setOptionDisabled(true);
 
-      const res = await axios.post("/quiz-question-check", {
+      const res = await axios.post("/api/quiz-question-check", {
         question_id,
         answer_id: Number(selectedAnswerId),
         attempt_id: attemptId,
@@ -117,7 +117,7 @@ export default function Questions() {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post("/quiz-submit", {
+      const res = await axios.post("/api/quiz-submit", {
         attempt_id: attemptId,
         vulRate,
         questionCorrect,

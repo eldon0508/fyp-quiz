@@ -209,7 +209,7 @@ export function CategoryCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const result = await axios.post(`http://localhost:3001/admin/category/store`, category);
+      const result = await axios.post("http://localhost:3001/admin/category/store", category);
       if (result.data.success) {
         router.push("/admin/category");
         setAlert({ title: "Success", type: "success", context: "Category created successfully!" });

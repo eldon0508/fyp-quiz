@@ -188,7 +188,7 @@ export default function MainContent() {
   }, []);
 
   const loadAllArticles = async () => {
-    const res = await axios.get("/articles");
+    const res = await axios.get("/api/articles");
     if (res.data.success) {
       setArticles(res.data.data);
       setCategories(res.data.categories);
@@ -207,7 +207,7 @@ export default function MainContent() {
     if (id === undefined) {
       loadAllArticles();
     } else {
-      const res = await axios.get(`/articles?category_id=${id}`);
+      const res = await axios.get(`/api/articles?category_id=${id}`);
       if (res.data.success) {
         setArticles(res.data.data);
       }

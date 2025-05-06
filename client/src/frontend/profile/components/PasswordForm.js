@@ -44,10 +44,11 @@ export default function PasswordForm() {
       setMatchError(false);
       setFormatError(false);
       try {
-        const res = await axios.put("/password-update", {
+        const res = await axios.put("/api/password-update", {
           password: formData.password,
         });
         if (res.data.success) {
+          alert("Your password has been updated!");
           navigate("/");
         }
       } catch (err) {

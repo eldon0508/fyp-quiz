@@ -40,8 +40,9 @@ export default function DetailsForm({ profile }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.put("/profile-update", { formData });
+      const res = await axios.put("/api/profile-update", { formData });
       if (res.data.success) {
+        alert("Your profile has been updated!");
         navigate(0);
       }
     } catch (err) {
@@ -52,9 +53,9 @@ export default function DetailsForm({ profile }) {
   const handleDelete = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.delete("/profile-delete");
+      const res = await axios.delete("/api/profile-delete");
       if (res.data.success) {
-        await axios.post("/signout");
+        alert("Your account has been destroyed.");
         navigate("/");
       }
     } catch (err) {
