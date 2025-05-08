@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import Grid from "@mui/material/Grid2";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/system";
 import { Button, TextField } from "@mui/material";
@@ -62,7 +59,7 @@ export default function PasswordForm() {
       <Grid container spacing={3}>
         <FormGrid size={{ xs: 12 }}>
           <FormLabel htmlFor="password" required>
-            Password
+            New Password
           </FormLabel>
           <TextField
             variant="outlined"

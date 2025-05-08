@@ -7,8 +7,9 @@ module.exports = async function (passport) {
   await passport.use(
     "quizzer-local",
     new LocalStrategy({ usernameField: "email", passwordField: "password" }, async (username, password, done) => {
-      const searchQuery = "SELECT * FROM users WHERE username = $1 AND active = $2 AND deleted_at IS NULL";
-      const data = await db.query(searchQuery, [username, true]);
+      const searchQuery =
+        "SELECT * FROM users WHERE username = $1 AND role = $2 AND active = $3 AND deleted_at IS NULL";
+      const data = await db.query(searchQuery, [username, 2, true]);
 
       if (data.length <= 0) {
         return done(null, false);
@@ -17,8 +18,10 @@ module.exports = async function (passport) {
         if (err) throw err;
         if (!result) {
           // Found, but incorrect password
+          console.log("Quizzer wrong password");
           return done(null, false);
         } else {
+          console.log("Quizzer login");
           return done(null, data[0]);
         }
       });
@@ -29,8 +32,8 @@ module.exports = async function (passport) {
     "admin-local",
     new LocalStrategy({ usernameField: "email", passwordField: "password" }, async (username, password, done) => {
       const searchQuery =
-        "SELECT * FROM users WHERE username = $1 AND active = $2 AND role = $3 AND deleted_at IS NULL";
-      const data = await db.query(searchQuery, [username, true, 1]);
+        "SELECT * FROM users WHERE username = $1 AND role = $2 AND active = $3 AND deleted_at IS NULL";
+      const data = await db.query(searchQuery, [username, 1, true]);
 
       if (data.length <= 0) {
         return done(null, false);
@@ -39,8 +42,10 @@ module.exports = async function (passport) {
         if (err) throw err;
         if (!result) {
           // Found, but incorrect password
+          console.log("Admin wrong password");
           return done(null, false);
         } else {
+          console.log("Admin login");
           return done(null, data[0]);
         }
       });
