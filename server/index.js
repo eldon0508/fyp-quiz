@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+require("dotenv").config();
 const cors = require("cors");
 const path = require("path");
 const flash = require("connect-flash");
@@ -10,13 +11,10 @@ const fileUpload = require("express-fileupload");
 const nodemailer = require("nodemailer");
 
 const passport = require("passport");
-const bcrypt = require("bcrypt");
-require("dotenv").config();
-
 const db = require("./database");
+const helper = require("./utils/helper");
 
 const PORT = process.env.PORT || 3001;
-const saltRounds = 12;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -72,7 +70,7 @@ app.post("/signup", async (req, res) => {
     if (result.length >= 1) {
       return res.json({ success: false });
     }
-    const hashedPassword = bcrypt.hashSync(password, saltRounds);
+    const hashedPassword = await helper.hashPassword(password);
     const insertQuery =
       "INSERT INTO users (username, password, firstname, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)";
 
@@ -114,14 +112,12 @@ app.post("/signout", (req, res) => {
 app.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   const randomString = Math.random().toString(20).substring(2, 12);
-  const hashedPassword = bcrypt.hashSync(randomString, saltRounds);
-  const updateQuery = "UPDATE users SET password = $1 WHERE username = $2";
-  await db.query(updateQuery, [hashedPassword, email]);
+  const hashedPassword = await helper.hashPassword(randomString);
 
   // Prepare the email message options.
   const mailOptions = {
     from: {
-      name: "SE Quiz Team",
+      name: "SE Quiz Team <no-reply@sequiz.com> ",
       address: "no-reply@quiz.com",
     },
     to: email,
@@ -135,9 +131,11 @@ app.post("/forgot-password", async (req, res) => {
   };
 
   try {
-    // Send email and log the response.
+    // Send email and update password, finally log the response.
     await transporter.sendMail(mailOptions);
     console.log("Forgot password email sent successfully.");
+    const updateQuery = "UPDATE users SET password = $1 WHERE username = $2";
+    await db.query(updateQuery, [hashedPassword, email]);
     return res.status(200).json({ success: true });
   } catch (emailError) {
     console.error("Error sending forgot password email:", emailError);
@@ -220,7 +218,7 @@ app.put("/password-update", ensureAuthenticated, async (req, res) => {
   try {
     const { password } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
-    const hashedPassword = bcrypt.hashSync(password, saltRounds);
+    const hashedPassword = await helper.hashPassword(password);
     const updateQuery = "UPDATE users SET password = $1, updated_at = $2 WHERE id = $3";
     await db.query(updateQuery, [hashedPassword, dt, req.user.id]);
     return res.status(200).json({ success: true });
