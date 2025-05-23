@@ -73,11 +73,7 @@ export default function Profile(props) {
       <div id="scaleble-content">
         <Container sx={{ py: { xs: 8, sm: 16 } }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={tab}
-              onChange={handleTabChange}
-              aria-label="basic tabs example"
-            >
+            <Tabs value={tab} onChange={handleTabChange} aria-label="basic tabs example">
               <Tab label="Attempts" value={0} />
               <Tab label="Details" value={1} />
               <Tab label="Password" value={2} />

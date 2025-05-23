@@ -28,10 +28,8 @@ export default function PasswordForm() {
     event.preventDefault();
 
     if (
-      formData.password.length < 8 ||
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(
-        formData.password
-      )
+      formData.password.length < 5 ||
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/.test(formData.password)
     ) {
       setFormatError(true);
     } else if (formData.password_confirm !== formData.password) {

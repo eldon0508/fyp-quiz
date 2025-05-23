@@ -7,9 +7,8 @@ module.exports = async function (passport) {
   await passport.use(
     "quizzer-local",
     new LocalStrategy({ usernameField: "email", passwordField: "password" }, async (username, password, done) => {
-      const searchQuery =
-        "SELECT * FROM users WHERE username = $1 AND role = $2 AND active = $3 AND deleted_at IS NULL";
-      const data = await db.query(searchQuery, [username, 2, true]);
+      const searchQuery = "SELECT * FROM users WHERE username = $1 AND active = $2 AND deleted_at IS NULL";
+      const data = await db.query(searchQuery, [username, true]);
 
       if (data.length <= 0) {
         return done(null, false);

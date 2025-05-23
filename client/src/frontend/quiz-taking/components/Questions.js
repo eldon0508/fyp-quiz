@@ -77,7 +77,7 @@ export default function Questions() {
       setNextDisabled(false);
       setOptionDisabled(true);
 
-      const res = await axios.post("/api/quiz-question-check", {
+      const res = await axios.post("/api/question-check", {
         question_id,
         answer_id: Number(selectedAnswerId),
         attempt_id: attemptId,

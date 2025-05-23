@@ -376,7 +376,7 @@ app.get("/quiz-taking/:attempt_id", ensureAuthenticated, async (req, res) => {
 });
 
 // Check question answer and add into attempt_question
-app.post("/quiz-question-check", ensureAuthenticated, async (req, res) => {
+app.post("/question-check", ensureAuthenticated, async (req, res) => {
   try {
     const { question_id, answer_id, attempt_id } = req.body;
     const dt = new Date().toISOString().replace("T", " ").substring(0, 19);
