@@ -14,20 +14,16 @@ import { useAlert } from "../../components/alert/AlertContext";
 
 // ----------------------------------------------------------------------
 
-export type ArticleProps = {
+export type FeedbackProps = {
   id: string;
-  category_id: number;
-  title: string;
-  subtitle: string;
-  authors: string;
-  url: string | null;
-  content: string;
+  feedback: string;
   created_at: string;
-  category_name: string;
+  quiz_id: number;
+  quiz_name: string;
 };
 
 type ArticleTableRowProps = {
-  row: ArticleProps;
+  row: FeedbackProps;
   selected: boolean;
   onSelectRow: () => void;
   reloadDatas: () => void;
@@ -47,10 +43,10 @@ export function ArticleTableRow({ row, selected, onSelectRow, reloadDatas }: Art
 
   const handleDelete = async (id: string) => {
     try {
-      const result = await axios.delete(`http://localhost:3001/admin/article/${id}/destroy`);
+      const result = await axios.delete(`http://localhost:3001/admin/feedback/${id}/destroy`);
       if (result.data.success) {
         reloadDatas();
-        setAlert({ title: "Success", type: "success", context: "Article deleted successfully!" });
+        setAlert({ title: "Success", type: "success", context: "Feedback deleted successfully!" });
       } else {
         setAlert({ title: "Opps", type: "error", context: "Something went wrong, please try again." });
       }
@@ -63,11 +59,10 @@ export function ArticleTableRow({ row, selected, onSelectRow, reloadDatas }: Art
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell>{row.title}</TableCell>
-        <TableCell>{row.subtitle}</TableCell>
-        <Link to={`/admin/category/${row.category_id}/edit`} target="_blank">
-          <TableCell>{row.category_name}</TableCell>
+        <Link to={`/admin/quiz/${row.quiz_id}/edit`} target="_blank">
+          <TableCell>{row.quiz_name}</TableCell>
         </Link>
+        <TableCell>{row.feedback}</TableCell>
         <TableCell>{row.created_at.split("T")[0]}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
@@ -99,12 +94,6 @@ export function ArticleTableRow({ row, selected, onSelectRow, reloadDatas }: Art
             },
           }}
         >
-          <Link to={`/admin/article/${row.id}/edit`}>
-            <MenuItem sx={{ textDecoration: "none" }}>
-              <Iconify icon="solar:pen-bold" />
-              Edit
-            </MenuItem>
-          </Link>
           <MenuItem onClick={() => handleDelete(row.id)} sx={{ color: "error.main" }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
