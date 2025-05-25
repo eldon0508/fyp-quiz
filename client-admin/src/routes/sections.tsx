@@ -33,6 +33,8 @@ export const AnswerPage = lazy(() => import("src/pages/answer/answer"));
 export const AnswerCreatePage = lazy(() => import("src/pages/answer/answerCreate"));
 export const AnswerEditPage = lazy(() => import("src/pages/answer/answerEdit"));
 
+export const FeedbackPage = lazy(() => import("src/pages/feedback/feedback"));
+
 export const UserPage = lazy(() => import("src/pages/user/user"));
 export const UserCreatePage = lazy(() => import("src/pages/user/userCreate"));
 export const UserEditPage = lazy(() => import("src/pages/user/userEdit"));
@@ -92,6 +94,8 @@ export function Router() {
         { path: "admin/user", element: <UserPage /> },
         { path: "admin/user/create", element: <UserCreatePage /> },
         { path: "admin/user/:id/edit", element: <UserEditPage /> },
+
+        { path: "admin/feedback", element: <FeedbackPage /> },
 
         { path: "admin/products", element: <ProductsPage /> },
         { path: "admin/blog", element: <BlogPage /> },

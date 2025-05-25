@@ -462,6 +462,7 @@ const articleRouter = require("./routes/article");
 const quizRouter = require("./routes/quiz");
 const questionRouter = require("./routes/question");
 const answerRouter = require("./routes/answer");
+const feedbackRouter = require("./routes/feedback");
 const userRoute = require("./routes/user");
 
 app.use("/admin/category", categoryRouter);
@@ -469,6 +470,7 @@ app.use("/admin/article", articleRouter);
 app.use("/admin/quiz", quizRouter);
 app.use("/admin/question", questionRouter);
 app.use("/admin/answer", answerRouter);
+app.use("/admin/feedback", feedbackRouter);
 app.use("/admin/user", userRoute);
 /* End of Admin Route */
 
