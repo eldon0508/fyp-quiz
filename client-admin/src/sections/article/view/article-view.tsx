@@ -595,7 +595,7 @@ export function ArticleEdit() {
                     required
                     onChange={(e) => onInputChange(e)}
                     select
-                    value={article.published ?? (article.published === true ? 1 : 0)}
+                    value={article.published === true ? 1 : 0}
                   >
                     <MenuItem value={-1} disabled>
                       --- Select Status ---

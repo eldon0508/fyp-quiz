@@ -61,10 +61,10 @@ export function UserTableRow({ row, selected, onSelectRow, reloadDatas }: UserTa
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell component="th" scope="row">
+        <TableCell>
           <Box gap={2} display="flex" alignItems="center">
             <Avatar alt={row.firstname} src="" />
-            {row.firstname}&nbsp;{row.lastname}
+            {row.firstname} {row.lastname}
           </Box>
         </TableCell>
         <TableCell>{row.dob}</TableCell>

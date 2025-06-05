@@ -396,7 +396,7 @@ export function UserEdit() {
                     type="date"
                     required
                     onChange={(e) => onInputChange(e)}
-                    value={dob}
+                    value={dob ?? null}
                   />
                 </FormControl>
               </Grid>

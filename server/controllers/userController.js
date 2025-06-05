@@ -2,7 +2,7 @@ const db = require("../database");
 
 const index = async (req, res) => {
   const selectQuery = "SELECT * FROM users WHERE role = $1 AND deleted_at IS NULL";
-  const data = db.query(selectQuery, [2]);
+  const data = await db.query(selectQuery, [2]);
   return res.status(200).json({ data: data });
 };
 

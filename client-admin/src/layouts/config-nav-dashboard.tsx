@@ -32,14 +32,14 @@ export const navData = [
     icon: icon("ic-question"),
   },
   {
-    title: "Feedbacks",
-    path: "/admin/feedback",
-    icon: icon("ic-feedback"),
-  },
-  {
     title: "Users",
     path: "/admin/user",
     icon: icon("ic-user"),
+  },
+  {
+    title: "Feedbacks",
+    path: "/admin/feedback",
+    icon: icon("ic-feedback"),
   },
   // {
   //   title: "Sign in",
