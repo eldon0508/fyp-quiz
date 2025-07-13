@@ -158,7 +158,7 @@ app.get("/getAuthUser", (req, res) => {
 app.get("/articles", async (req, res) => {
   try {
     const { category_id } = req.query;
-    const selectCategoryQuery = "SELECT id, name FROM categories WHERE deleted_at IS NULL LIMIT 5";
+    const selectCategoryQuery = "SELECT id, name FROM categories WHERE deleted_at IS NULL ORDER BY RANDOM() LIMIT 5";
     const categories = await db.query(selectCategoryQuery);
 
     if (category_id) {
